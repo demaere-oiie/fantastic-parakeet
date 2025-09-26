@@ -38,12 +38,22 @@ def isect(a,b):
                 ys.append((x,y))
     return ys
 
-def merge():
+def merge(xs):
+    # it's wrong, but for now assume at most one overlap
+    ta, to = 1.0, 0.0
+    ua, uo = 1.0, 0.0
+    for b1,b2,xta,xto,xua,xuo,xx in sorted(xs):
+        ta = min(ta,xta)
+        to = max(to,xto)
+        ua = min(ua,xua)
+        uo = max(uo,xuo)
+
     print("**** merge ****")
+    print((ta,to),(ua,uo))
     return xs
 
 def isect1(xs, a, b, n):
-    if len(xs) > 30:
+    if len(xs) > 45:
         ys = merge(xs)
     else:
         ys = [r
@@ -84,5 +94,19 @@ def isect1(xs, a, b, n):
 if __name__=="__main__":
     a = ((1,1),(6,1),(8,2),(8,8))
     b = ((1,8),(6,2),(8,1),(8,1))
-    #b = ((0,8),(5,2),(7,1),(7,1))
+    print(isect(a,b))
+    a = ((0,0),(32,0),(-24,8),(8,8))
+    b = ((0,8),(0,-24),(8,32),(8,0))
+    print(isect(a,b))
+    a = ((0,0),(1,1),(7,7),(8,8))
+    b = ((1,0),(2,1),(8,7),(9,8))
+    print(isect(a,b))
+    a = ((1,1),(6,1),(8,2),(8,8))
+    b = ((8,8),(8,2),(6,1),(1,1))
+    print(isect(a,b))
+    a = ((1,1),(6,1),(8,2),(8,8))
+    b = ((8,8),(8,2),(6,1),(1,1))
+    print(isect(a,b))
+    a = ((1,1),(2,2),(7,7),(8,8))
+    b = ((4,4),(5,5),(11,11),(12,12))
     print(isect(a,b))
