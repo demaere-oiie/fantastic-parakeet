@@ -48,12 +48,11 @@ def merge(xs):
         ua = min(ua,xua)
         uo = max(uo,xuo)
 
-    print("**** merge ****")
-    print((ta,to),(ua,uo))
+    print("*** merge ",(ta,to),(ua,uo))
     return xs
 
 def isect1(xs, a, b, n):
-    if len(xs) > 45:
+    if len(xs) > 1000: #45:
         ys = merge(xs)
     else:
         ys = [r
@@ -107,6 +106,6 @@ if __name__=="__main__":
     a = ((1,1),(6,1),(8,2),(8,8))
     b = ((8,8),(8,2),(6,1),(1,1))
     print(isect(a,b))
-    a = ((1,1),(2,2),(7,7),(8,8))
+    a = ((0,0),(1,1),(7,7),(8,8))
     b = ((4,4),(5,5),(11,11),(12,12))
     print(isect(a,b))
