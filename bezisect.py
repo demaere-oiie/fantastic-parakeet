@@ -22,10 +22,23 @@ close = lambda p,q,s=2: abs(p[0]-q[0])<s*Eps and abs(p[1]-q[1])<s*Eps
 
 ################################################################################
 
-def isect(a,b):
-    return isect1([(a,b,0.,1.,0.,1.,'d')],a,b,0)
+def eval(a,t):
+    [b,c] = split(a,t)
+    return b[-1]
 
-def merge(xs):
+def isect(a,b):
+    xs = isect1([(a,b,0.,1.,0.,1.,'d')],a,b,0)
+    ys = []
+    for b1,b2,ta,to,ua,uo,xx in xs:
+        if xx=='x':
+            t = mid(ta,to)
+            u = mid(ua,uo)
+            (x,y) = eval(a,t)
+            if not any(close(p,(x,y)) for p in ys):
+                ys.append((x,y))
+    return ys
+
+def merge():
     print("**** merge ****")
     return xs
 
@@ -70,7 +83,6 @@ def isect1(xs, a, b, n):
 
 if __name__=="__main__":
     a = ((1,1),(6,1),(8,2),(8,8))
-    # b = ((1,8),(6,2),(8,1),(8,1))
-    b = ((0,8),(5,2),(7,1),(7,1))
-    for x in isect(a,b):
-        print(x)
+    b = ((1,8),(6,2),(8,1),(8,1))
+    #b = ((0,8),(5,2),(7,1),(7,1))
+    print(isect(a,b))
