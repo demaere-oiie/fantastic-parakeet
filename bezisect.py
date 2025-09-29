@@ -121,9 +121,14 @@ def xeval(b,t):
     print((b,t))
     return eval(b,t)
 
-def toolap(b,os):
-    return " ".join(f"M {x},{y} h .001" for o in os
-        for t in o[:2] for x,y in [xeval(b,t)])
+def subbez(b,a,o):
+    return split(split(b,o)[0],a/o)[1]
+
+def toolap(c,os):
+    return " ".join(f"M {b[0][0]},{b[0][1]} "+
+        f"C {b[1][0]},{b[1][1]} {b[2][0]},{b[2][1]} {b[3][0]},{b[3][1]}"
+        for o in os
+        for b in [subbez(c,o[0],o[1])])
 
 def svgout(bs,cs,xs):
     global serno
@@ -133,7 +138,7 @@ def svgout(bs,cs,xs):
     <path stroke="blue" stroke-width="1.1" d="{topath(bs)}" fill="none" />
     <path stroke="green" d="{topath(cs)}" fill="none" />
     <path stroke="red" stroke-linecap="round" d="{topoints(isects)}" />
-    <path stroke="yellow" stroke-linecap="round" d="{toolap(bs[0],olaps)}" />
+    <path stroke="yellow" stroke-width="0.8" stroke-linecap="round" d="{toolap(bs[0],olaps)}" />
 </svg>
     '''
     f = open(f"test{serno}.svg","w")
