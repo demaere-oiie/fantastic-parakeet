@@ -150,6 +150,49 @@ def svgout(bs,cs,xs):
 def shape_eq(x,y):
     return bcovers(x,y) and bcovers(y,x)
 
+def shape_xor_bad(xs,ys):
+    return ([x for x in xs if not bcovers([x],ys)]+
+            [y for y in ys if not bcovers([y],xs)])
+
+def connect(xs):
+    ys = []
+    pt = xs[0][0]
+    while xs:
+        for i,x in enumerate(xs):
+            if close(pt,x[0]):
+                ys.append(x)
+                pt = x[3]
+                xs = xs[:i]+xs[i+1:]
+                break
+        else:
+            for i,x in enumerate(xs):
+                if close(pt,x[3]):
+                    ys.append(x[::-1])
+                    pt = x[0]
+                    xs = xs[:i]+xs[i+1:]
+                    break
+            else:
+                [][0]
+    return ys
+
+def strokes(xs):
+    return f"M {xs[0][0][0]},{xs[0][0][1]} "+" ".join(
+        f"C {b[1][0]},{b[1][1]} {b[2][0]},{b[2][1]} {b[3][0]},{b[3][1]}"
+        for b in xs)+"Z"
+
+def svgout2(xs):
+    global serno
+    s = f'''
+<svg viewBox="-1 -1 12 12" xmlns="http://www.w3.org/2000/svg">
+    <path stroke="blue" d="{strokes(connect(xs))}" fill="none" />
+</svg>
+    '''
+    f = open(f"test{serno}.svg","w")
+    f.write(s)
+    f.close()
+    serno = serno + 1
+
+
 ################################################################################
 
 if __name__=="__main__":
@@ -193,3 +236,13 @@ if __name__=="__main__":
     b0,b1 = split(b,0.3)
     c = ((0,8),(1,7),(7,1),(8,0))
     print(shape_eq([a,b0,b1,c],[c,a0,a1,b]))
+    a = ((0,0),(0,1),(0,7),(0,8))
+    b = ((0,0),(1,0),(7,0),(8,0))
+    c = ((0,8),(1,7),(7,1),(8,0))
+    c0,c1 = split(c,0.3)
+    c2,c3 = split(c,0.7)
+    d = ((0,8),(1,8),(7,8),(8,8))
+    e = ((8,0),(8,1),(8,7),(8,8))
+    svgout2(shape_xor_bad([a,b,c0,c1],[c2,c3,d,e]))
+    svgout2([a,b,c0,c1])
+    svgout2([c2,c3,d,e])
