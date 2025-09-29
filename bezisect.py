@@ -27,7 +27,7 @@ def eval(a,t):
     return b[-1]
 
 def isect(a,b):
-    xs = isect1([(a,b,0.,1.,0.,1.,'d')],a,b,0)
+    xs,ms = isect1([(a,b,0.,1.,0.,1.,'d')],a,b,0)
     ys = []
     for b1,b2,ta,to,ua,uo,xx in xs:
         if xx=='x':
@@ -36,7 +36,7 @@ def isect(a,b):
             (x,y) = eval(a,t)
             if not any(close(p,(x,y)) for p in ys):
                 ys.append((x,y))
-    return ys
+    return (ys,ms)
 
 def merge(xs):
     # it's wrong, but for now assume at most one overlap
@@ -48,12 +48,11 @@ def merge(xs):
         ua = min(ua,xua)
         uo = max(uo,xuo)
 
-    print("*** merge ",(ta,to),(ua,uo))
-    return xs
+    return [(ta,to,ua,uo)]
 
 def isect1(xs, a, b, n):
     if len(xs) > 1000: #45:
-        ys = merge(xs)
+        return (xs, merge(xs))
     else:
         ys = [r
           for meas in [lambda w: _(xo-xa+yo-ya
@@ -85,8 +84,26 @@ def isect1(xs, a, b, n):
                (b12,b2,tm,to,ua,uo,'')]
                    for tm in [mid(ta,to)])) ]
     if xs == ys:
-        return xs
+        return (xs, [])
     return isect1(ys, a, b, n+1)
+
+################################################################################
+
+def xor(bs,cs):
+    print(f"{bs}, {cs}")
+    ds = sorted(bs + cs)
+    return [d for i,d in enumerate(ds)
+              if not any((c-d)**2<1e-2 for c in ds[:i]+ds[i+1:])]
+
+def bcovers(bs,cs):
+    for b in bs:
+        olap = [0.,1.]
+        for c in cs:
+            ys,ms = isect(b,c)
+            olap = xor(olap,[r for m in ms for r in m[:2]])
+        if olap:
+            return False
+    return True
 
 ################################################################################
 
@@ -109,3 +126,12 @@ if __name__=="__main__":
     a = ((0,0),(1,1),(7,7),(8,8))
     b = ((4,4),(5,5),(11,11),(12,12))
     print(isect(a,b))
+    a = ((1,1),(6,1),(8,2),(8,8))
+    b = ((8,8),(8,2),(6,1),(1,1))
+    print(bcovers([a],[b])) # reparamaterization
+    a = ((1,1),(6,1),(8,2),(8,8))
+    b = ((1,8),(6,2),(8,1),(8,1))
+    print(bcovers([a],[b])) # not a bcover
+    a = ((0,0),(1,1),(7,7),(8,8))
+    bs = [((0,0),(1,1),(3,3),(4,4)),((4,4),(5,5),(7,7),(8,8))]
+    print(bcovers([a],bs)) # not 1:1
