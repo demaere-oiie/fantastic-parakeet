@@ -107,16 +107,46 @@ def bcovers(bs,cs):
 
 ################################################################################
 
+serno = 0
+
+def topath(bs):
+    return f"M {bs[0][0][0]},{bs[0][0][1]} "+" ".join(
+       f"C {b[1][0]},{b[1][1]} {b[2][0]},{b[2][1]} {b[3][0]},{b[3][1]}"
+       for b in bs)
+
+def topoints(ps):
+    return " ".join(f"M {p[0]},{p[1]} h .001" for p in ps)
+
+def svgout(bs,cs,xs):
+    global serno
+    [isects,olaps] = xs
+    s = f'''
+<svg viewBox="-1 -1 12 12" xmlns="http://www.w3.org/2000/svg">
+    <path stroke="blue" d="{topath(bs)}" fill="none" />
+    <path stroke="green" d="{topath(cs)}" fill="none" />
+    <path stroke="red" stroke-linecap="round" d="{topoints(isects)}" />
+</svg>
+    '''
+    f = open(f"test{serno}.svg","w")
+    f.write(s)
+    f.close()
+    serno = serno + 1
+
+################################################################################
+
 if __name__=="__main__":
     a = ((1,1),(6,1),(8,2),(8,8))
     b = ((1,8),(6,2),(8,1),(8,1))
     print(isect(a,b))
+    svgout([a],[b],isect(a,b))
     a = ((0,0),(32,0),(-24,8),(8,8))
     b = ((0,8),(0,-24),(8,32),(8,0))
     print(isect(a,b))
+    svgout([a],[b],isect(a,b))
     a = ((0,0),(1,1),(7,7),(8,8))
     b = ((1,0),(2,1),(8,7),(9,8))
     print(isect(a,b))
+    svgout([a],[b],isect(a,b))
     a = ((1,1),(6,1),(8,2),(8,8))
     b = ((8,8),(8,2),(6,1),(1,1))
     print(isect(a,b))
