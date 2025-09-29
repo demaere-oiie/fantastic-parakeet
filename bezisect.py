@@ -117,14 +117,23 @@ def topath(bs):
 def topoints(ps):
     return " ".join(f"M {p[0]},{p[1]} h .001" for p in ps)
 
+def xeval(b,t):
+    print((b,t))
+    return eval(b,t)
+
+def toolap(b,os):
+    return " ".join(f"M {x},{y} h .001" for o in os
+        for t in o[:2] for x,y in [xeval(b,t)])
+
 def svgout(bs,cs,xs):
     global serno
     [isects,olaps] = xs
     s = f'''
 <svg viewBox="-1 -1 12 12" xmlns="http://www.w3.org/2000/svg">
-    <path stroke="blue" d="{topath(bs)}" fill="none" />
+    <path stroke="blue" stroke-width="1.1" d="{topath(bs)}" fill="none" />
     <path stroke="green" d="{topath(cs)}" fill="none" />
     <path stroke="red" stroke-linecap="round" d="{topoints(isects)}" />
+    <path stroke="yellow" stroke-linecap="round" d="{toolap(bs[0],olaps)}" />
 </svg>
     '''
     f = open(f"test{serno}.svg","w")
@@ -156,6 +165,7 @@ if __name__=="__main__":
     a = ((0,0),(1,1),(7,7),(8,8))
     b = ((4,4),(5,5),(11,11),(12,12))
     print(isect(a,b))
+    svgout([a],[b],isect(a,b))
     a = ((1,1),(6,1),(8,2),(8,8))
     b = ((8,8),(8,2),(6,1),(1,1))
     print(bcovers([a],[b])) # reparamaterization
