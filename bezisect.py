@@ -27,7 +27,7 @@ def eval(a,t):
     return b[-1]
 
 def isect(a,b):
-    xs,ms = isect1([(a,b,0.,1.,0.,1.,'d')],a,b,0)
+    xs = isect1([(a,b,0.,1.,0.,1.,'d')],a,b,0)
     ys = []
     for b1,b2,ta,to,ua,uo,xx in xs:
         if xx=='x':
@@ -36,7 +36,7 @@ def isect(a,b):
             (x,y) = eval(a,t)
             if not any(close(p,(x,y)) for p in ys):
                 ys.append((x,y))
-    return (ys,ms)
+    return ys
 
 def merge(xs):
     # it's wrong, but for now assume at most one overlap
@@ -48,11 +48,13 @@ def merge(xs):
         ua = min(ua,xua)
         uo = max(uo,xuo)
 
-    return [(ta,to,ua,uo)]
+    print("**** merge ****")
+    print((ta,to),(ua,uo))
+    return xs
 
 def isect1(xs, a, b, n):
-    if len(xs) > 1000: #45:
-        return (xs, merge(xs))
+    if len(xs) > 45:
+        ys = merge(xs)
     else:
         ys = [r
           for meas in [lambda w: _(xo-xa+yo-ya
@@ -84,114 +86,8 @@ def isect1(xs, a, b, n):
                (b12,b2,tm,to,ua,uo,'')]
                    for tm in [mid(ta,to)])) ]
     if xs == ys:
-        return (xs, [])
+        return xs
     return isect1(ys, a, b, n+1)
-
-################################################################################
-
-def xor(bs,cs):
-    ds = sorted(bs + cs)
-    return [d for i,d in enumerate(ds)
-              if not any((c-d)**2<1e-2 for c in ds[:i]+ds[i+1:])]
-
-def bcovers(bs,cs):
-    for b in bs:
-        olap = [0.,1.]
-        for c in cs:
-            ys,ms = isect(b,c)
-            olap = xor(olap,[r for m in ms for r in m[:2]])
-        if olap:
-            return False
-    return True
-
-################################################################################
-
-serno = 0
-
-def topath(bs):
-    return f"M {bs[0][0][0]},{bs[0][0][1]} "+" ".join(
-       f"C {b[1][0]},{b[1][1]} {b[2][0]},{b[2][1]} {b[3][0]},{b[3][1]}"
-       for b in bs)
-
-def topoints(ps):
-    return " ".join(f"M {p[0]},{p[1]} h .001" for p in ps)
-
-def xeval(b,t):
-    print((b,t))
-    return eval(b,t)
-
-def subbez(b,a,o):
-    return split(split(b,o)[0],a/o)[1]
-
-def toolap(c,os):
-    return " ".join(f"M {b[0][0]},{b[0][1]} "+
-        f"C {b[1][0]},{b[1][1]} {b[2][0]},{b[2][1]} {b[3][0]},{b[3][1]}"
-        for o in os
-        for b in [subbez(c,o[0],o[1])])
-
-def svgout(bs,cs,xs):
-    global serno
-    [isects,olaps] = xs
-    s = f'''
-<svg viewBox="-1 -1 12 12" xmlns="http://www.w3.org/2000/svg">
-    <path stroke="blue" stroke-width="1.1" d="{topath(bs)}" fill="none" />
-    <path stroke="green" d="{topath(cs)}" fill="none" />
-    <path stroke="red" stroke-linecap="round" d="{topoints(isects)}" />
-    <path stroke="yellow" stroke-width="0.8" stroke-linecap="round" d="{toolap(bs[0],olaps)}" />
-</svg>
-    '''
-    f = open(f"test{serno}.svg","w")
-    f.write(s)
-    f.close()
-    serno = serno + 1
-
-################################################################################
-
-def shape_eq(x,y):
-    return bcovers(x,y) and bcovers(y,x)
-
-def shape_xor_bad(xs,ys):
-    return ([x for x in xs if not bcovers([x],ys)]+
-            [y for y in ys if not bcovers([y],xs)])
-
-def connect(xs):
-    ys = []
-    pt = xs[0][0]
-    while xs:
-        for i,x in enumerate(xs):
-            if close(pt,x[0]):
-                ys.append(x)
-                pt = x[3]
-                xs = xs[:i]+xs[i+1:]
-                break
-        else:
-            for i,x in enumerate(xs):
-                if close(pt,x[3]):
-                    ys.append(x[::-1])
-                    pt = x[0]
-                    xs = xs[:i]+xs[i+1:]
-                    break
-            else:
-                [][0]
-    return ys
-
-def strokes(xs):
-    return f"M {xs[0][0][0]},{xs[0][0][1]} "+" ".join(
-        f"C {b[1][0]},{b[1][1]} {b[2][0]},{b[2][1]} {b[3][0]},{b[3][1]}"
-        for b in xs)+"Z"
-
-def svgout2(xs):
-    global serno
-    s = f'''
-<svg viewBox="-1 -1 12 12" xmlns="http://www.w3.org/2000/svg">
-    <path stroke="blue" d="{strokes(connect(xs))}" fill="none" />
-</svg>
-    '''
-    f = open(f"test{serno}.svg","w")
-    f.write(s)
-    f.close()
-    serno = serno + 1
-
 
 ################################################################################
 
@@ -199,50 +95,18 @@ if __name__=="__main__":
     a = ((1,1),(6,1),(8,2),(8,8))
     b = ((1,8),(6,2),(8,1),(8,1))
     print(isect(a,b))
-    svgout([a],[b],isect(a,b))
     a = ((0,0),(32,0),(-24,8),(8,8))
     b = ((0,8),(0,-24),(8,32),(8,0))
     print(isect(a,b))
-    svgout([a],[b],isect(a,b))
     a = ((0,0),(1,1),(7,7),(8,8))
     b = ((1,0),(2,1),(8,7),(9,8))
     print(isect(a,b))
-    svgout([a],[b],isect(a,b))
     a = ((1,1),(6,1),(8,2),(8,8))
     b = ((8,8),(8,2),(6,1),(1,1))
     print(isect(a,b))
     a = ((1,1),(6,1),(8,2),(8,8))
     b = ((8,8),(8,2),(6,1),(1,1))
     print(isect(a,b))
-    a = ((0,0),(1,1),(7,7),(8,8))
+    a = ((1,1),(2,2),(7,7),(8,8))
     b = ((4,4),(5,5),(11,11),(12,12))
     print(isect(a,b))
-    svgout([a],[b],isect(a,b))
-    a = ((1,1),(6,1),(8,2),(8,8))
-    b = ((8,8),(8,2),(6,1),(1,1))
-    print(bcovers([a],[b])) # reparamaterization
-    a = ((1,1),(6,1),(8,2),(8,8))
-    b = ((1,8),(6,2),(8,1),(8,1))
-    print(bcovers([a],[b])) # not a bcover
-    a = ((0,0),(1,1),(7,7),(8,8))
-    bs = [((0,0),(1,1),(3,3),(4,4)),((4,4),(5,5),(7,7),(8,8))]
-    print(bcovers([a],bs)) # not 1:1
-    a = ((0,0),(1,1),(7,7),(8,8))
-    bs = [((-1,-1),(1,1),(3,3),(4,4)),((4,4),(5,5),(7,7),(9,9))]
-    print(bcovers([a],bs)) # not 1:1, not at endpoints
-    a = ((0,0),(0,1),(0,7),(0,8))
-    a0,a1 = split(a,0.7)
-    b = ((0,0),(1,0),(7,0),(8,0))
-    b0,b1 = split(b,0.3)
-    c = ((0,8),(1,7),(7,1),(8,0))
-    print(shape_eq([a,b0,b1,c],[c,a0,a1,b]))
-    a = ((0,0),(0,1),(0,7),(0,8))
-    b = ((0,0),(1,0),(7,0),(8,0))
-    c = ((0,8),(4,8),(4,0),(8,0))
-    c0,c1 = split(c,0.3)
-    c2,c3 = split(c,0.7)
-    d = ((0,8),(1,8),(7,8),(8,8))
-    e = ((8,0),(8,1),(8,7),(8,8))
-    svgout2(shape_xor_bad([a,b,c0,c1],[c2,c3,d,e]))
-    svgout2([a,b,c0,c1])
-    svgout2([c2,c3,d,e])
