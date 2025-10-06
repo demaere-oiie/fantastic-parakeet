@@ -50,6 +50,18 @@ class Bezier:
                        us.append(t)
         return (us,ms)
 
+    def covered(self, others):
+        olap = [0.,1.]
+        for c in others:
+            ys, ms = self.isect(c)
+            olap = xor1d(olap,[r for m in ms for r in m[:2]])
+        return not olap
+
+def xor1d(bs,cs):
+    ds = sorted(bs + cs)
+    return [d for i,d in enumerate(ds)
+              if not any((c-d)**2<1e-2 for c in ds[:i]+ds[i+1:])]
+
 def merge(xs):
     # it's wrong, but for now assume at most one overlap
     ta, to = 1.0, 0.0
