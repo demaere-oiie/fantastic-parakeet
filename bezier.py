@@ -39,6 +39,9 @@ class Bezier:
         [b,c] = self.split(t)
         return b.b3
 
+    def subbez(self, a, o):
+        return self.split(o)[0].split(a/o)[1]
+
     def isect(self, other):
         a, b = self, other
         xs,ms = isect_raw([(a,b,0.,1.,0.,1.,'d')],a,b,0)
@@ -50,12 +53,69 @@ class Bezier:
                        us.append(t)
         return (us,ms)
 
+    def isectB(self, other):
+        a, b = self, other
+        xs,ms = isect_raw([(a,b,0.,1.,0.,1.,'d')],a,b,0)
+        ys = []
+        ps = []
+        for b1,b2,ta,to,ua,uo,xx in xs:
+            if xx=='x':
+                t = mid(ta,to)
+                u = mid(ua,uo)
+                q = a.eval(t)
+                if not any(q.close(p) for p in ps):
+                    ys.append(t)
+                    ps.append(q)
+        return (ys,ms)
+
     def covered(self, others):
         olap = [0.,1.]
         for c in others:
             ys, ms = self.isect(c)
             olap = xor1d(olap,[r for m in ms for r in m[:2]])
         return not olap
+
+    def flip(self):
+        return Bezier(self.b3, self.b2, self.b1, self.b0)
+
+    def inside(self, others):
+        isects = []
+        olaps = []
+        keeps = []
+        for y in others:
+            i,o = self.isectB(y)
+            isects.extend(i)
+            olaps.extend(o)
+        isects = sorted(isects)
+        for a,o in zip([0.]+isects,isects+[1.]):
+            sb = self.subbez(a,o)
+    
+            overlapped = False
+            for (xa,xo,ya,yo) in olaps:
+                print("?",xa,xo)
+                if Point(xa,xo).close(Point(a,o),1e3):
+                    print("!!!!",xa,xo)
+                    keeps.append(sb)
+                    overlapped = True
+                    break
+    
+            if overlapped:
+                continue
+    
+            ls = []
+            p = sb.eval(0.5)
+            px,py = p.x, p.y
+            dx,dy = (5,0)
+            ps = []
+            for y in others:
+                b = Bezier(Point(px,py),Point(px+dx,py+dy),
+                           Point(px+dx,py+dy),Point(px+2*dx,py+2*dy))
+                i,os = b.isectB(y)
+                ps.extend(i)
+            print(a,o,len(ps),ps)
+            if len(ps)%2 == 1:
+                keeps.append(sb)
+        return [k for k in  keeps if not k.b0.close(k.b3)]
 
 def xor1d(bs,cs):
     ds = sorted(bs + cs)
