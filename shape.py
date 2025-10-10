@@ -14,5 +14,6 @@ class Shape:
         return not self.bxor(other).bs
 
     def band(self, other):
-        return Shape(connect([r for b in self.bs for r in b.inside(other.bs)] +
-                             [r for b in other.bs for r in b.inside(self.bs)]))
+        return Shape(connect(
+            [r for b in self.bs for r in b.inside(other.bs,0)] +
+            [r for b in other.bs for r in b.inside(self.bs,1)]))

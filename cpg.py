@@ -85,4 +85,5 @@ if __name__=="__main__":
     d = B((6,0),(6,6),(2,6),(2,0))
     svgout2([a,b])
     svgout2([c,d])
-    svgout2(Shape([a,b]).band(Shape([c,d])).bs)
+    e = Shape([a,b]).band(Shape([c,d]))
+    svgout2(e.bs)

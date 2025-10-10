@@ -94,7 +94,7 @@ class Bezier:
     def flip(self):
         return Bezier(self.b3, self.b2, self.b1, self.b0)
 
-    def inside(self, others):
+    def inside(self, others, keepo):
         isects = []
         olaps = []
         keeps = []
@@ -111,7 +111,8 @@ class Bezier:
                 print("?",xa,xo)
                 if Point(xa,xo).close(Point(a,o),1e3):
                     print("!!!!",xa,xo)
-                    keeps.append(sb)
+                    if keepo:
+                        keeps.append(sb)
                     overlapped = True
                     break
     
