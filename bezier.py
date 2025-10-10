@@ -75,6 +75,14 @@ class Bezier:
             olap = xor1d(olap,[r for m in ms for r in m[:2]])
         return not olap
 
+    def uncovered(self, others):
+        olap = [0.,1.]
+        for c in others:
+            ys, ms = self.isect(c)
+            olap = xor1d(olap,[r for m in ms for r in m[:2]])
+        if olap == [0.,1.]: return [self]
+        return [self.subbez(a,o) for (a,o) in zip(olap[0::2],olap[1::2])]
+
     def flip(self):
         return Bezier(self.b3, self.b2, self.b1, self.b0)
 

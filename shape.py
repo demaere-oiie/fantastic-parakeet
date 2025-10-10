@@ -7,8 +7,8 @@ class Shape:
     bs: list[Bezier]
 
     def bxor(self, other):
-        return Shape([b for b in self.bs if not b.covered(other.bs)] +
-                     [b for b in other.bs if not b.covered(self.bs)])
+        return Shape([r for b in self.bs for r in b.uncovered(other.bs)] +
+                     [r for b in other.bs for r in b.uncovered(self.bs)])
 
     def beq(self, other):
         return not self.bxor(other).bs

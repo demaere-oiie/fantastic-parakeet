@@ -37,3 +37,48 @@ def svgout(bs,cs,xs):
     f.write(s)
     f.close()
     serno = serno + 1
+
+def connect(xs):
+    ys = []
+    if not xs: return xs
+    pt = xs[0].b0
+    while xs:
+        for i,x in enumerate(xs):
+            if pt.close(x.b0,1e3):
+                ys.append(x)
+                pt = x.b3
+                xs = xs[:i]+xs[i+1:]
+                break
+        else:
+            for i,x in enumerate(xs):
+                if pt.close(x.b3,1e3):
+                    ys.append(x.flip())
+                    pt = x.b0
+                    xs = xs[:i]+xs[i+1:]
+                    break
+            else:
+                print("!!!!!!")
+                for y in ys:
+                    print(y)
+                print("!!!",pt)
+                for x in xs:
+                    print(x)
+                [][0]
+    return ys
+
+def strokes(xs):
+    return f"M {xs[0].b0.x},{xs[0].b0.y} "+" ".join(
+        f"C {b.b1.x},{b.b1.y} {b.b2.x},{b.b2.y} {b.b3.x},{b.b3.y}"
+        for b in xs)+"Z"
+
+def svgout2(xs):
+    global serno
+    s = f'''
+<svg viewBox="-1 -1 12 12" xmlns="http://www.w3.org/2000/svg">
+    <path stroke="blue" fill="#8080ff" d="{strokes(connect(xs))}" />
+</svg>
+    '''
+    f = open(f"test{serno}.svg","w")
+    f.write(s)
+    f.close()
+    serno = serno + 1
