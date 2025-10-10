@@ -18,6 +18,9 @@ class Shape:
             [r for b in self.bs for r in b.inside(other.bs,0)] +
             [r for b in other.bs for r in b.inside(self.bs,1)])))
 
+    def bor(self, other):
+        return self.band(other).bxor(self.bxor(other))
+
 def clean(bs):
     cs = []
     print("???",bs)
