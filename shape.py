@@ -14,6 +14,14 @@ class Shape:
         return not self.bxor(other).bs
 
     def band(self, other):
-        return Shape(connect(
+        return Shape(clean(connect(
             [r for b in self.bs for r in b.inside(other.bs,0)] +
-            [r for b in other.bs for r in b.inside(self.bs,1)]))
+            [r for b in other.bs for r in b.inside(self.bs,1)])))
+
+def clean(bs):
+    cs = []
+    print("???",bs)
+    for i,b in enumerate(bs):
+        if not b.covered(bs[:i]+bs[i+1:]):
+            cs.append(b)
+    return cs

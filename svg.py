@@ -39,15 +39,21 @@ def svgout(bs,cs,xs):
     serno = serno + 1
 
 def connect(xs):
-    ys = []
+    ys, good = [],0
     if not xs: return xs
     pt = xs[0].b0
+    z = pt
     while xs:
         for i,x in enumerate(xs):
             if pt.close(x.b0,1e3):
                 ys.append(x)
                 pt = x.b3
                 xs = xs[:i]+xs[i+1:]
+                if pt.close(z,1e3):
+                    good = len(ys)+1
+                    if len(xs):
+                        pt = xs[0].b0
+                        z = pt
                 break
         else:
             for i,x in enumerate(xs):
@@ -55,6 +61,11 @@ def connect(xs):
                     ys.append(x.flip())
                     pt = x.b0
                     xs = xs[:i]+xs[i+1:]
+                    if pt.close(z,1e3):
+                        good = len(ys)+1
+                        if len(xs):
+                            pt = xs[0].b0
+                            z = pt
                     break
             else:
                 print("!!!!!!")
@@ -64,12 +75,12 @@ def connect(xs):
                 for x in xs:
                     print(x)
                 [][0]
-    return ys
+    return ys[:good]
 
 def strokes(xs):
     return f"M {xs[0].b0.x},{xs[0].b0.y} "+" ".join(
         f"C {b.b1.x},{b.b1.y} {b.b2.x},{b.b2.y} {b.b3.x},{b.b3.y}"
-        for b in xs)+"Z"
+        for b in xs)+"Z" if xs else ""
 
 def svgout2(xs):
     global serno
