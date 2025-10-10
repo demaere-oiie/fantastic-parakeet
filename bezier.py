@@ -83,6 +83,14 @@ class Bezier:
         if olap == [0.,1.]: return [self]
         return [self.subbez(a,o) for (a,o) in zip(olap[0::2],olap[1::2])]
 
+    def included(self, others):
+        olap = []
+        for c in others:
+            ys, ms = self.isect(c)
+            olap = xor1d(olap,[r for m in ms for r in m[:2]])
+        if olap == [0.,1.]: return [self]
+        return [self.subbez(a,o) for (a,o) in zip(olap[0::2],olap[1::2])]
+
     def flip(self):
         return Bezier(self.b3, self.b2, self.b1, self.b0)
 
@@ -99,7 +107,7 @@ class Bezier:
             sb = self.subbez(a,o)
     
             overlapped = False
-            for (xa,xo,ya,yo) in olaps:
+            for (xa,xo) in olaps:
                 print("?",xa,xo)
                 if Point(xa,xo).close(Point(a,o),1e3):
                     print("!!!!",xa,xo)
