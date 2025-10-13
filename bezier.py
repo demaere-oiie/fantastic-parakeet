@@ -102,15 +102,19 @@ class Bezier:
             i,o = self.isectB(y)
             isects.extend(i)
             olaps.extend(o)
-        isects = sorted(isects)
+            i,o = self.isectB(Bezier(y.b0,y.b0,y.b0,y.b0))
+            isects.extend(i)
+            i,o = self.isectB(Bezier(y.b3,y.b3,y.b3,y.b3))
+            isects.extend(i)
+        isects = sorted((i for i in isects
+                        if not Point(i,0).close(Point(0,0),1e3) and
+                           not Point(i,0).close(Point(1,0),1e3)))
         for a,o in zip([0.]+isects,isects+[1.]):
             sb = self.subbez(a,o)
     
             overlapped = False
             for (xa,xo) in olaps:
-                print("?",xa,xo)
                 if Point(xa,xo).close(Point(a,o),1e3):
-                    print("!!!!",xa,xo)
                     if keepo:
                         keeps.append(sb)
                     overlapped = True
@@ -129,7 +133,6 @@ class Bezier:
                            Point(px+dx,py+dy),Point(px+2*dx,py+2*dy))
                 i,os = b.isectB(y)
                 ps.extend(i)
-            print(a,o,len(ps),ps)
             if len(ps)%2 == 1:
                 keeps.append(sb)
         return [k for k in  keeps if not k.b0.close(k.b3)]

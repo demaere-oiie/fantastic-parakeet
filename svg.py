@@ -93,3 +93,20 @@ def svgout2(xs):
     f.write(s)
     f.close()
     serno = serno + 1
+
+def strokes2(bs):
+    return " ".join(f"M {b.b0.x},{b.b0.y} "+
+        f"C {b.b1.x},{b.b1.y} {b.b2.x},{b.b2.y} {b.b3.x},{b.b3.y}"
+        for b in bs)
+
+def svgout3(xs):
+    global serno
+    s = f'''
+<svg viewBox="-1 -1 12 12" xmlns="http://www.w3.org/2000/svg">
+    <path stroke="blue" stroke-width="0.1" fill="#8080ff" d="{strokes2(xs)}" />
+</svg>
+    '''
+    f = open(f"test{serno}.svg","w")
+    f.write(s)
+    f.close()
+    serno = serno + 1

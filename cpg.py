@@ -1,108 +1,88 @@
 from bezier import Bezier, Point
 from shape import Shape
-from svg import svgout, svgout2
+from svg import svgout, svgout2, svgout3
 
 def B(*ps):
     return Bezier(*[Point(*p) for p in ps])
 
+shapes = [Shape(bs) for bs in [
+    [B((0,0),(1,0),(0,8),(8,8)),
+     B((8,8),(7,8),(8,0),(0,0))],
+    [B((0,8),(1,8),(0,0),(8,0)),
+     B((8,0),(7,0),(8,8),(0,8))],
+    [B((0,0),(1,0),(7,0),(8,0)),
+     B((8,0),(8,8),(0,8),(0,0))],
+    [B((2,0),(3,0),(5,0),(6,0)),
+     B((6,0),(6,6),(2,6),(2,0))],
+    [B((4,0),(4,1),(4,5),(4,6)),
+     B((4,6),(0,6),(0,0),(4,0))],
+    [B((4,4),(4,5),(4,7),(4,8)),
+     B((4,8),(8,8),(8,4),(4,4))],
+    [B((0,0),(1,0),(7,0),(8,0)),
+     B((8,0),(8,1),(5,4),(4,4)),
+     B((4,4),(3,4),(0,1),(0,0))],
+    [B((2,0),(3,0),(5,0),(6,0)),
+     B((6,0),(6,1),(5,3),(4,3)),
+     B((4,3),(3,3),(2,1),(2,0))],
+]]
+
 if __name__=="__main__":
-    a = B((1,1),(6,1),(8,2),(8,8))
-    b = B((1,8),(6,2),(8,1),(8,1))
-    print(a.isect(b))
-    svgout([a],[b],a.isect(b))
-    a = B((0,0),(32,0),(-24,8),(8,8))
-    b = B((0,8),(0,-24),(8,32),(8,0))
-    print(a.isect(b))
-    svgout([a],[b],a.isect(b))
-    a = B((0,0),(1,1),(7,7),(8,8))
-    b = B((1,0),(2,1),(8,7),(9,8))
-    print(a.isect(b))
-    svgout([a],[b],a.isect(b))
-    a = B((1,1),(6,1),(8,2),(8,8))
-    b = B((8,8),(8,2),(6,1),(1,1))
-    print(a.isect(b))
-    a = B((1,1),(6,1),(8,2),(8,8))
-    b = B((8,8),(8,2),(6,1),(1,1))
-    print(a.isect(b))
-    a = B((0,0),(1,1),(7,7),(8,8))
-    b = B((4,4),(5,5),(11,11),(12,12))
-    print(a.isect(b))
-    svgout([a],[b],a.isect(b))
-    a = B((1,1),(6,1),(8,2),(8,8))
-    b = B((8,8),(8,2),(6,1),(1,1))
-    print(a.covered([b])) # reparamaterization
-    a = B((1,1),(6,1),(8,2),(8,8))
-    b = B((1,8),(6,2),(8,1),(8,1))
-    print(a.covered([b])==False) # not a bcover
-    a = B((0,0),(1,1),(7,7),(8,8))
-    bs = [B((0,0),(1,1),(3,3),(4,4)),B((4,4),(5,5),(7,7),(8,8))]
-    print(a.covered(bs)) # not 1:1
-    a = B((0,0),(1,1),(7,7),(8,8))
-    bs = [B((-1,-1),(1,1),(3,3),(4,4)),B((4,4),(5,5),(7,7),(9,9))]
-    print(a.covered(bs)) # not 1:1, not at endpoints
-    a = B((0,0),(0,1),(0,7),(0,8))
-    a0,a1 = a.split(0.7)
-    b = B((0,0),(1,0),(7,0),(8,0))
-    b0,b1 = b.split(0.3)
-    c = B((0,8),(1,7),(7,1),(8,0))
-    print(Shape([a,b0,b1,c]).beq(Shape([c,a0,a1,b])))
-    a = B((0,0),(0,1),(0,7),(0,8))
-    b = B((0,0),(1,0),(7,0),(8,0))
-    c = B((0,8),(4,8),(4,0),(8,0))
-    c0,c1 = c.split(0.3)
-    c2,c3 = c.split(0.7)
-    d = B((0,8),(1,8),(7,8),(8,8))
-    e = B((8,0),(8,1),(8,7),(8,8))
-    svgout2(Shape([a,b,c0,c1]).bxor(Shape([c2,c3,d,e])).bs)
-    svgout2([a,b,c0,c1])
-    svgout2([c2,c3,d,e])
-    a = B((0,0),(1,0),(0,8),(8,8))
-    b = B((8,8),(7,8),(8,0),(0,0))
-    c = B((0,8),(1,8),(0,0),(8,0))
-    d = B((8,0),(7,0),(8,8),(0,8))
-    svgout2([a,b])
-    svgout2([c,d])
-    svgout2(Shape([a,b]).band(Shape([c,d])).bs)
-    a = B((0,0),(1,0),(7,0),(8,0))
-    b = B((8,0),(8,1),(5,4),(4,4))
-    c = B((4,4),(3,4),(0,1),(0,0))
-    d = B((2,0),(3,0),(5,0),(6,0))
-    e = B((6,0),(6,1),(5,3),(4,3))
-    f = B((4,3),(3,3),(2,1),(2,0))
-    svgout2([a,b,c])
-    svgout2([d,e,f])
-    svgout2(Shape([a,b,c]).bxor(Shape([d,e,f])).bs)
-    a = B((4,0),(4,1),(4,5),(4,6))
-    b = B((4,6),(0,6),(0,0),(4,0))
-    c = B((4,4),(4,5),(4,7),(4,8))
-    d = B((4,8),(8,8),(8,4),(4,4))
-    svgout2([a,b])
-    svgout2([c,d])
-    svgout2(Shape([a,b]).bxor(Shape([c,d])).bs)
-    a = B((0,0),(1,0),(7,0),(8,0))
-    b = B((8,0),(8,8),(0,8),(0,0))
-    c = B((2,0),(3,0),(5,0),(6,0))
-    d = B((6,0),(6,6),(2,6),(2,0))
-    svgout2([a,b])
-    svgout2([c,d])
-    e = Shape([a,b]).band(Shape([c,d]))
-    svgout2(e.bs)
-    a = B((4,0),(4,1),(4,5),(4,6))
-    b = B((4,6),(0,6),(0,0),(4,0))
-    c = B((4,4),(4,5),(4,7),(4,8))
-    d = B((4,8),(8,8),(8,4),(4,4))
-    svgout2([a,b])
-    svgout2([c,d])
-    svgout2(Shape([a,b]).band(Shape([c,d])).bs)
-    svgout2(Shape([a,b]).bor(Shape([c,d])).bs)
-    a = B((0,0),(1,0),(7,0),(8,0))
-    b = B((8,0),(8,1),(5,4),(4,4))
-    c = B((4,4),(3,4),(0,1),(0,0))
-    d = B((2,0),(3,0),(5,0),(6,0))
-    e = B((6,0),(6,1),(5,3),(4,3))
-    f = B((4,3),(3,3),(2,1),(2,0))
-    svgout2([a,b,c])
-    svgout2([d,e,f])
-    g = Shape([a,b,c]).bor(Shape([d,e,f]))
-    svgout2(g.bs)
-    print(g.beq(Shape([a,b,c])))
+    import sys
+
+    if 0:
+      for i,s in enumerate(shapes):
+        print("#",i)
+        if not s.beq(s):
+            print("a != a: ",s)
+
+        if not s.bor(Shape([])).beq(s):
+            print("a | 0 != a: ",s)
+
+        if not s.bor(s).beq(s):
+            print("a | a != a: ",s)
+
+        if not s.band(s).beq(s):
+            print("a & a != a: ",s)
+
+    for i,s in enumerate(shapes):
+        for j,t in enumerate(shapes[:i+1]):
+            print("#",i,j)
+            u = s.band(t)
+            v = s.bor(t)
+            if u.beq(s) and not v.beq(t):
+                    print("!!!",s,t)
+            if u.beq(t) and not v.beq(s):
+                    print("!!!",s,t)
+
+            if not u.beq(t.band(s)):
+                    print("===",s,t)
+
+            if not v.beq(t.bor(s)):
+                    print("===",s,t)
+
+            if not u.ble(s):
+                    print("!!!",u,s,t)
+            if not u.ble(t):
+                    print("!!!",u,s,t)
+
+            if not s.ble(v):
+                print("!!!",v,s,t)
+                svgout2(s.bs)
+                svgout2(t.bs)
+                svgout3(v.bs)
+            if not t.ble(v):
+                print("!!!",v,s,t)
+                svgout2(s.bs)
+                svgout2(t.bs)
+                svgout3(v.bs)
+
+    if 0:
+      for i,s in enumerate(shapes):
+        for j,t in enumerate(shapes[:i]):
+            for k,u in enumerate(shapes[:j]):
+
+                print("#",i,j,k)
+                v = s.band(t.bxor(u))
+                w = (s.band(t)).bxor(s.band(u))
+                if not v.beq(w):
+                    print("!!!",s,t,u)
