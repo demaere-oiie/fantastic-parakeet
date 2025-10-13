@@ -49,6 +49,7 @@ if __name__=="__main__":
             print("#",i,j)
             u = s.band(t)
             v = s.bor(t)
+            w = s.bxor(t)
             if u.beq(s) and not v.beq(t):
                     print("!!!",s,t)
             if u.beq(t) and not v.beq(s):
@@ -67,13 +68,13 @@ if __name__=="__main__":
 
             if not s.ble(v):
                 print("!!!",v,s,t)
-                svgout2(s.bs)
-                svgout2(t.bs)
+                svgout3(w.bs)
+                svgout3(u.bs)
                 svgout3(v.bs)
             if not t.ble(v):
                 print("!!!",v,s,t)
-                svgout2(s.bs)
-                svgout2(t.bs)
+                svgout3(w.bs)
+                svgout3(u.bs)
                 svgout3(v.bs)
 
     if 0:
