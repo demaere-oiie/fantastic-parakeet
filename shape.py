@@ -7,12 +7,13 @@ class Shape:
     bs: list[Bezier]
 
     def bxor(self, other):
-        return Shape([r for b in self.bs
+        return Shape(nontriv(
+                     [r for b in self.bs
                         for u in b.uncovered(other.bs)
                         for r in u.splitsBy(other.bs)] +
                      [r for b in other.bs
                         for u in b.uncovered(self.bs)
-                        for r in u.splitsBy(self.bs)])
+                        for r in u.splitsBy(self.bs)]))
 
     def beq(self, other):
         return not self.bxor(other).bs
@@ -34,3 +35,6 @@ class Shape:
         for r in [r for b in other.bs for r in b.inside(self.bs,1)]:
             print("1",r)
         return self.band(other)
+
+def nontriv(bs):
+    return [b for b in bs if not b.b0.close(b.b3,1e3)]

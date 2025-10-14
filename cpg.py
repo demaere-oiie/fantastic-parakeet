@@ -68,12 +68,12 @@ if __name__=="__main__":
 
             if not s.ble(v):
                 print("!!!",v,s,t)
-                svgout3(w.bs)
+                svgout3(s.band(v).bxor(s).bs)
                 svgout3(u.bs)
                 svgout3(v.bs)
             if not t.ble(v):
                 print("!!!",v,s,t)
-                svgout3(w.bs)
+                svgout3(t.band(v).bxor(t).bs)
                 svgout3(u.bs)
                 svgout3(v.bs)
 
