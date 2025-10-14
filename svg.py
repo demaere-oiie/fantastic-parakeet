@@ -39,6 +39,7 @@ def svgout(bs,cs,xs):
     serno = serno + 1
 
 def connect(xs):
+    oxs = xs[:]
     ys, good = [],0
     if not xs: return xs
     pt = xs[0].b0
@@ -69,12 +70,9 @@ def connect(xs):
                     break
             else:
                 print("!!!!!!")
-                for y in ys:
-                    print(y)
-                print("!!!",pt)
-                for x in xs:
-                    print(x)
-                [][0]
+                svgout3(ys)
+                svgout3(oxs)
+                return []
     return ys[:good]
 
 def strokes(xs):

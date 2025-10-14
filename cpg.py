@@ -44,12 +44,12 @@ if __name__=="__main__":
         if not s.band(s).beq(s):
             print("a & a != a: ",s)
 
-    for i,s in enumerate(shapes):
+    if 0:
+      for i,s in enumerate(shapes):
         for j,t in enumerate(shapes[:i+1]):
             print("#",i,j)
             u = s.band(t)
             v = s.bor(t)
-            w = s.bxor(t)
             if u.beq(s) and not v.beq(t):
                     print("!!!",s,t)
             if u.beq(t) and not v.beq(s):
@@ -68,22 +68,22 @@ if __name__=="__main__":
 
             if not s.ble(v):
                 print("!!!",v,s,t)
-                svgout3(s.band(v).bxor(s).bs)
-                svgout3(u.bs)
-                svgout3(v.bs)
             if not t.ble(v):
                 print("!!!",v,s,t)
-                svgout3(t.band(v).bxor(t).bs)
-                svgout3(u.bs)
-                svgout3(v.bs)
 
-    if 0:
+            if not s.bxor(t).ble(v):
+                print("s^t<=s|t",v,s,t)
+
+            if not u.ble(v):
+                print("s&t<=s|t",v,s,t)
+
+    if 1:
       for i,s in enumerate(shapes):
-        for j,t in enumerate(shapes[:i]):
-            for k,u in enumerate(shapes[:j]):
+        for j,t in enumerate(shapes[:i+1]):
+            for k,u in enumerate(shapes[:j+1]):
 
                 print("#",i,j,k)
                 v = s.band(t.bxor(u))
                 w = (s.band(t)).bxor(s.band(u))
                 if not v.beq(w):
-                    print("!!!",s,t,u)
+                    print("s&(t^u) == (s^t)&(s^u)",s,t,u)
