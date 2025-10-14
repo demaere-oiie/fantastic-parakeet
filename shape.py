@@ -7,8 +7,12 @@ class Shape:
     bs: list[Bezier]
 
     def bxor(self, other):
-        return Shape([r for b in self.bs for r in b.uncovered(other.bs)] +
-                     [r for b in other.bs for r in b.uncovered(self.bs)])
+        return Shape([r for b in self.bs
+                        for u in b.uncovered(other.bs)
+                        for r in u.splitsBy(other.bs)] +
+                     [r for b in other.bs
+                        for u in b.uncovered(self.bs)
+                        for r in u.splitsBy(self.bs)])
 
     def beq(self, other):
         return not self.bxor(other).bs

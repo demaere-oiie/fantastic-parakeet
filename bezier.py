@@ -91,6 +91,23 @@ class Bezier:
         if olap == [0.,1.]: return [self]
         return [self.subbez(a,o) for (a,o) in zip(olap[0::2],olap[1::2])]
 
+    def splitsBy(self, others):
+        isects = []
+        keeps = []
+        for y in others:
+            i,o = self.isectB(y)
+            isects.extend(i)
+            i,o = self.isectB(Bezier(y.b0,y.b0,y.b0,y.b0))
+            isects.extend(i)
+            i,o = self.isectB(Bezier(y.b3,y.b3,y.b3,y.b3))
+            isects.extend(i)
+        isects = sorted((i for i in isects
+                        if not Point(i,0).close(Point(0,0),1e3) and
+                           not Point(i,0).close(Point(1,0),1e3)))
+        for a,o in zip([0.]+isects,isects+[1.]):
+            keeps.append(self.subbez(a,o))
+        return [k for k in  keeps if not k.b0.close(k.b3)]
+
     def flip(self):
         return Bezier(self.b3, self.b2, self.b1, self.b0)
 
