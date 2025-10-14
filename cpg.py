@@ -82,8 +82,18 @@ if __name__=="__main__":
         for j,t in enumerate(shapes[:i+1]):
             for k,u in enumerate(shapes[:j+1]):
 
+                if 0 and (i,j,k) == (1,1,0):
+                    svgout2(s.bs)
+                    svgout2(t.bxor(u).bs)
+                    w = (s.band(t)).bxor(s.band(u))
+                    svgout2(w.bs)
+                    v = s.band(t.bxor(u))
+                    sys.exit(0)
+
                 print("#",i,j,k)
-                v = s.band(t.bxor(u))
-                w = (s.band(t)).bxor(s.band(u))
+                v = s.band(t.bor(u))
+                w = (s.band(t)).bor(s.band(u))
                 if not v.beq(w):
-                    print("s&(t^u) == (s^t)&(s^u)",s,t,u)
+                    print("s&(t|u) == (s|t)&(s|u)",s,t,u)
+                    svgout2(v.bs)
+                    svgout2(w.bs)
