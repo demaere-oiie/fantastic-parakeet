@@ -48,6 +48,7 @@ if __name__=="__main__":
       for i,s in enumerate(shapes):
         for j,t in enumerate(shapes[:i+1]):
             print("#",i,j)
+
             u = s.band(t)
             v = s.bor(t)
 

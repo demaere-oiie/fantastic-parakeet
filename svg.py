@@ -44,9 +44,17 @@ def svgout(bs,cs,xs):
     writefile(s)
 
 def strokes(xs):
-    return f"M {xs[0].b0.x},{xs[0].b0.y} "+" ".join(
-        f"C {b.b1.x},{b.b1.y} {b.b2.x},{b.b2.y} {b.b3.x},{b.b3.y}"
-        for b in xs)+"Z" if xs else ""
+    s = ""
+    while xs:
+        p = xs[0].b0
+        for j,x in enumerate(xs):
+            if x.b3.close(p,1e3):
+                s += f"M {p.x},{p.y} "+" ".join(
+                     f"C {b.b1.x},{b.b1.y} {b.b2.x},{b.b2.y} {b.b3.x},{b.b3.y}"
+                     for b in xs[:j+1])+"Z"
+                xs = xs[j+1:]
+                break
+    return s
 
 def svgout2(xs):
     writefile(f'''
