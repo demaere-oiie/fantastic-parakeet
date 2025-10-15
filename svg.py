@@ -1,4 +1,13 @@
+from util import connect
+
 serno = 0
+
+def writefile(s,pre="test"):
+    global serno
+    f = open(f"{pre}{serno}.svg","w")
+    f.write(s)
+    f.close()
+    serno = serno + 1
 
 def topath(bs):
     return f"M {bs[0].b0.x},{bs[0].b0.y} "+" ".join(
@@ -23,7 +32,6 @@ def toolap(c,os):
         for b in [subbez(c,o[0],o[1])])
 
 def svgout(bs,cs,xs):
-    global serno
     [isects,olaps] = xs
     s = f'''
 <svg viewBox="-1 -1 12 12" xmlns="http://www.w3.org/2000/svg">
@@ -33,47 +41,7 @@ def svgout(bs,cs,xs):
     <path stroke="yellow" stroke-width="0.8" stroke-linecap="round" d="{toolap(bs[0],olaps)}" />
 </svg>
     '''
-    f = open(f"test{serno}.svg","w")
-    f.write(s)
-    f.close()
-    serno = serno + 1
-
-def connect(xs):
-    oxs = xs[:]
-    ys, good = [],0
-    if not xs: return xs
-    pt = xs[0].b0
-    z = pt
-    while xs:
-        for i,x in enumerate(xs):
-            if pt.close(x.b0,1e3):
-                ys.append(x)
-                pt = x.b3
-                xs = xs[:i]+xs[i+1:]
-                if pt.close(z,1e3):
-                    good = len(ys)+1
-                    if len(xs):
-                        pt = xs[0].b0
-                        z = pt
-                break
-        else:
-            for i,x in enumerate(xs):
-                if pt.close(x.b3,1e3):
-                    ys.append(x.flip())
-                    pt = x.b0
-                    xs = xs[:i]+xs[i+1:]
-                    if pt.close(z,1e3):
-                        good = len(ys)+1
-                        if len(xs):
-                            pt = xs[0].b0
-                            z = pt
-                    break
-            else:
-                print("!!!!!!")
-                svgout3(ys)
-                svgout3(oxs)
-                return []
-    return ys[:good]
+    writefile(s)
 
 def strokes(xs):
     return f"M {xs[0].b0.x},{xs[0].b0.y} "+" ".join(
@@ -81,16 +49,11 @@ def strokes(xs):
         for b in xs)+"Z" if xs else ""
 
 def svgout2(xs):
-    global serno
-    s = f'''
+    writefile(f'''
 <svg viewBox="-1 -1 12 12" xmlns="http://www.w3.org/2000/svg">
     <path stroke="blue" fill="#8080ff" d="{strokes(connect(xs))}" />
 </svg>
-    '''
-    f = open(f"test{serno}.svg","w")
-    f.write(s)
-    f.close()
-    serno = serno + 1
+    ''')
 
 def strokes2(bs):
     return " ".join(f"M {b.b0.x},{b.b0.y} "+
@@ -98,13 +61,8 @@ def strokes2(bs):
         for b in bs)
 
 def svgout3(xs):
-    global serno
-    s = f'''
+    writefile(f'''
 <svg viewBox="-1 -1 12 12" xmlns="http://www.w3.org/2000/svg">
     <path stroke="blue" stroke-width="0.1" fill="#8080ff" d="{strokes2(xs)}" />
 </svg>
-    '''
-    f = open(f"test{serno}.svg","w")
-    f.write(s)
-    f.close()
-    serno = serno + 1
+    ''')
