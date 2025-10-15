@@ -52,8 +52,8 @@ if __name__=="__main__":
             u = s.band(t)
             v = s.bor(t)
 
-            if i == j+1:
-                svgout2(v.bs)
+            #if i == j+1:
+            #    svgout2(v.bs)
 
             if u.beq(s) and not v.beq(t):
                     print("!!!",s,t)
@@ -78,6 +78,10 @@ if __name__=="__main__":
 
             if not s.bxor(t).ble(v):
                 print("s^t<=s|t",v,s,t)
+                w = s.bxor(t)
+                z = w.bxor(w.band(v))
+                print(z.bs)
+                svgout2(z.bs)
 
             if not u.ble(v):
                 print("s&t<=s|t",v,s,t)
