@@ -44,7 +44,7 @@ if __name__=="__main__":
         if not s.band(s).beq(s):
             print("a & a != a: ",s)
  
-    if 1:
+    if 0:
       for i,s in enumerate(shapes):
         for j,t in enumerate(shapes[:i+1]):
             print("#",i,j)
@@ -86,18 +86,10 @@ if __name__=="__main__":
             if not u.ble(v):
                 print("s&t<=s|t",v,s,t)
 
-    if 0:
+    if 1:
       for i,s in enumerate(shapes):
         for j,t in enumerate(shapes[:i+1]):
             for k,u in enumerate(shapes[:j+1]):
-
-                if 0 and (i,j,k) == (1,1,0):
-                    svgout2(s.bs)
-                    svgout2(t.bxor(u).bs)
-                    w = (s.band(t)).bxor(s.band(u))
-                    svgout2(w.bs)
-                    v = s.band(t.bxor(u))
-                    sys.exit(0)
 
                 print("#",i,j,k)
                 v = s.band(t.bor(u))
@@ -106,3 +98,10 @@ if __name__=="__main__":
                     print("s&(t|u) == (s&t)|(s&u)",s,t,u)
                     svgout3(v.bs)
                     svgout3(w.bs)
+                    a = s.band(t)
+                    b = s.band(u)
+                    svgout3(a.bs)
+                    svgout3(b.bs)
+                    svgout3(a.band(b).bs)
+                    svgout3(a.bxor(b).bs)
+                    sys.exit(0)
