@@ -157,18 +157,18 @@ class Bezier:
 def xor1d(bs,cs):
     ds = sorted(bs + cs)
     return [d for i,d in enumerate(ds)
-              if not any((c-d)**2<1e-2 for c in ds[:i]+ds[i+1:])]
+              if not any((c-d)**2<1e-6 for c in ds[:i]+ds[i+1:])]
 
 def merge(xs):
     # it's wrong, but for now assume at most one overlap
     ta, to = 1.0, 0.0
     for b1,b2,xta,xto,xua,xuo,xx in xs:
-        ta = min(ta,xta)
-        to = max(to,xto)
+        ta = min(ta,(xta+xto)/2)
+        to = max(to,(xta+xto)/2)
     return [(ta,to)]
 
 def isect_raw(xs, a, b, n):
-    if len(xs) > 1000: #45:
+    if len(xs) > 10000:
         return (xs, merge(xs))
     else:
         ys = [r
