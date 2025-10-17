@@ -1,6 +1,6 @@
 from bezier import Bezier
 from dataclasses import dataclass
-from svg import connect
+from svg import connect, svgout3
 
 @dataclass
 class Shape:
@@ -20,8 +20,10 @@ class Shape:
 
     def band(self, other):
         return Shape(connect(
-            [r for b in self.bs for r in b.inside(other.bs,0)] +
-            [r for b in other.bs for r in b.inside(self.bs,1)]))
+            [r for b in self.bs
+               for r in b.inside(other.bs,0)] +
+            [r for b in other.bs
+               for r in b.inside(self.bs,1)]))
 
     def ble(self, other):
         return self.band(other).beq(self)
@@ -30,11 +32,41 @@ class Shape:
         return self.band(other).bxor(self.bxor(other))
 
     def db_and(self, other):
-        for r in [r for b in self.bs for r in b.inside(other.bs,0)]:
+        for r in [r for b in self.bs 
+                    for r in b.inside(other.bs,0)]:
             print("0",r)
-        for r in [r for b in other.bs for r in b.inside(self.bs,1)]:
+        for r in [r for b in other.bs
+                    for r in b.inside(self.bs,1)]:
             print("1",r)
+        svgout3([r for b in self.bs for r in b.inside(other.bs,0)]+
+                [r for b in other.bs for r in b.inside(self.bs,1)])
+        svgout3([r for b in self.bs for r in b.inside(other.bs,1)]+
+                [r for b in other.bs for r in b.inside(self.bs,0)])
         return self.band(other)
 
+    def db_xor(self, other):
+        print("----")
+        for b in self.bs:
+          print("b",b)
+          for u in b.uncovered(other.bs):
+            print("u",u)
+            for r in u.splitsBy(other.bs):
+              print(":",r)
+        print("----")
+        for b in other.bs:
+          print("b",b)
+          for u in b.uncovered(self.bs):
+            print("u",u)
+            for r in u.splitsBy(self.bs):
+              print(":",r)
+        return self.bxor(other)
+
+    def brk(self, other):
+        cs = [r for b in self.bs for r in b.splitsBy(other.bs)]
+        if len(cs) != len(self.bs):
+            print("==== broken")
+            return Shape(connect(cs))
+        return self
+
 def nontriv(bs):
-    return [b for b in bs if not b.b0.close(b.b3,1e3)]
+    return [b for b in bs if not b.b0.close(b.b3,1e2)]

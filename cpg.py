@@ -96,19 +96,26 @@ if __name__=="__main__":
 
                 print("#",i,j,k)
 
-                if (i,j,k) == (5,4,3):
-                    print("=== skip")
-                    continue
+                #v = s.band(t.bor(u))
+                #w = (s.band(t)).bor(s.band(u))
 
-                v = s.band(t.bor(u))
-                w = (s.band(t)).bor(s.band(u))
+                v = s.band(t.bxor(u))
+                w = (s.band(t)).bxor(s.band(u))
+
                 if not v.beq(w):
                     print("s&(t|u) == (s&t)|(s&u)",s,t,u)
-                    a = s.band(t)
-                    b = s.band(u)
-                    svgout3(a.bs)
-                    svgout3(b.bs)
-                    svgout3(a.band(b).bs)
-                    svgout3(a.db_xor(b).bs)
-                    svgout3(a.bor(b).bs)
+                    #a = s.band(t)
+                    #b = s.band(u)
+                    #svgout3(s.bs,"x")
+                    #svgout3(t.bs,"x")
+                    #svgout3(u.bs,"x")
+                    #svgout3(t.bor(u).bs,"x")
+                    #svgout3(v.bs,"x")
+                    #svgout3(w.bs,"x")
+                    svgout3(s.bs+t.bs+u.bs,"x")
+                    svgout3(v.bs,"x")
+                    svgout3(w.bs,"x")
+                    svgout3(t.bor(u).bs,"x")
+                    svgout3(s.band(t).bs,"x")
+                    svgout3(s.band(u).bs,"x")
                     sys.exit(0)
