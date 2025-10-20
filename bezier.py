@@ -1,4 +1,3 @@
-from util import Eps, mid, close
 from dataclasses import dataclass
 from svg import svgout3, connect
 
@@ -240,3 +239,9 @@ def isect_raw(xs, a, b, n):
     if xs == ys:
         return (xs, [])
     return isect_raw(ys, a, b, n+1)
+
+Eps = 1e-5
+
+mid = lambda x,y: x + 0.5*(y-x)
+
+close = lambda x,y: (y-x)**2<1e-2
