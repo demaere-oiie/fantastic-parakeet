@@ -1,6 +1,5 @@
 from bezier import Bezier
 from dataclasses import dataclass
-from svg import svgout3
 from topo import connect, trim
 
 @dataclass
@@ -38,6 +37,7 @@ class Shape:
         return self.band(other).bxor(self.bxor(other))
 
     def db_and(self, other):
+        from svg import svgout3
         for r in self.bs:
             print("s",r)
         for r in other.bs:
@@ -73,13 +73,6 @@ class Shape:
             for r in u.splitsBy(self.bs):
               print(":",r)
         return self.bxor(other)
-
-    def brk(self, other):
-        cs = [r for b in self.bs for r in b.splitsBy(other.bs)]
-        if len(cs) != len(self.bs):
-            print("==== broken")
-            return Shape(connect(cs))
-        return self
 
 def nontriv(bs):
     return [b for b in bs if not b.b0.close(b.b3,1e3)]

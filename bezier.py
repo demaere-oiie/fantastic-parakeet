@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from svg import svgout3, connect
+from svg import connect
 
 @dataclass
 class Point:
@@ -42,17 +42,6 @@ class Bezier:
     def subbez(self, a, o):
         return self.split(o)[0].split(a/o)[1]
 
-    def isect(self, other):
-        a, b = self, other
-        xs,ms = isect_raw([(a,b,0.,1.,0.,1.,'d')],a,b,0)
-        us = []
-        for b1,b2,ta,to,ua,uo,xx in xs:
-             if xx=='x':
-                  t = mid(ta,to)
-                  if not any(close(t,u) for u in us):
-                       us.append(t)
-        return (us,ms)
-
     def isectB(self, other):
         a, b = self, other
         xs,ms = isect_raw([(a,b,0.,1.,0.,1.,'d')],a,b,0)
@@ -68,25 +57,10 @@ class Bezier:
                     ps.append(q)
         return (ys,ms)
 
-    def covered(self, others):
-        olap = [0.,1.]
-        for c in others:
-            ys, ms = self.isect(c)
-            olap = xor1d(olap,[r for m in ms for r in m[:2]])
-        return not olap
-
     def uncovered(self, others):
         olap = [0.,1.]
         for c in others:
-            ys, ms = self.isect(c)
-            olap = xor1d(olap,[r for m in ms for r in m[:2]])
-        if olap == [0.,1.]: return [self]
-        return [self.subbez(a,o) for (a,o) in zip(olap[0::2],olap[1::2])]
-
-    def included(self, others):
-        olap = []
-        for c in others:
-            ys, ms = self.isect(c)
+            ys, ms = self.isectB(c)
             olap = xor1d(olap,[r for m in ms for r in m[:2]])
         if olap == [0.,1.]: return [self]
         return [self.subbez(a,o) for (a,o) in zip(olap[0::2],olap[1::2])]
