@@ -1,5 +1,6 @@
 from util import Eps, mid, close
 from dataclasses import dataclass
+from svg import svgout3, connect
 
 @dataclass
 class Point:
@@ -63,7 +64,7 @@ class Bezier:
                 t = mid(ta,to)
                 u = mid(ua,uo)
                 q = a.eval(t)
-                if not any(q.close(p) for p in ps):
+                if not any(q.close(p,1e2) for p in ps):
                     ys.append(t)
                     ps.append(q)
         return (ys,ms)
@@ -111,7 +112,7 @@ class Bezier:
     def flip(self):
         return Bezier(self.b3, self.b2, self.b1, self.b0)
 
-    def inside(self, others, keepo):
+    def inside(self, others, selves):
         isects = []
         olaps = []
         keeps = []
@@ -119,9 +120,9 @@ class Bezier:
             i,o = self.isectB(y)
             isects.extend(i)
             olaps.extend(o)
-            i,o = self.isectB(Bezier(y.b0,y.b0,y.b0,y.b0))
-            isects.extend(i)
-            i,o = self.isectB(Bezier(y.b3,y.b3,y.b3,y.b3))
+        c = connect(others)
+        for o,p in zip(others,others[1:]+others[:1]):
+            i,o = self.isectB(Bezier(o.b3,o.b3,p.b0,p.b0))
             isects.extend(i)
         isects = sorted((i for i in isects
                         if not Point(i,0).close(Point(0,0),1e3) and
@@ -131,11 +132,44 @@ class Bezier:
     
             overlapped = False
             for (xa,xo) in olaps:
-                if Point(xa,xo).close(Point(a,o),1e3):
-                    if keepo:
-                        keeps.append(sb)
+                if selves is not None and Point(xa,xo).close(Point(0,1),1e3):
+                    p = self.eval(0.5)
+                    dx,dy = (5,0)
+                    b = Bezier(Point(p.x-0.001,p.y),Point(p.x+dx,p.y+dy),
+                               Point(p.x+dx,p.y+dy),Point(p.x+2*dx,p.y+2*dy))
+                    ps,qs = [],[]
+                    for y in others:
+                        i,_ = b.isectB(y)
+                        ps.extend(i)
+                    for y in selves:
+                        i,_ = b.isectB(y)
+                        qs.extend(i)
+                    if len(ps)%2 == len(qs)%2:
+                        keeps.append(self)
                     overlapped = True
                     break
+                elif Point(xa,xo).close(Point(a,o),1e3):
+                    if selves is not None:
+                        if Point(xa,xo).close(Point(0.,1.),1e3):
+                            xa = 0.
+                            xo = 1.
+                        p = self.subbez(xa,xo).eval(0.5)
+                        dx,dy = (5,0)
+                        b = Bezier(Point(p.x-0.001,p.y),Point(p.x+dx,p.y+dy),
+                                   Point(p.x+dx,p.y+dy),Point(p.x+2*dx,p.y+2*dy))
+                        ps,qs = [],[]
+                        for y in others:
+                            i,_ = b.isectB(y)
+                            ps.extend(i)
+                        for y in selves:
+                            i,_ = b.isectB(y)
+                            qs.extend(i)
+                        if len(ps)%2 == len(qs)%2:
+                            keeps.append(sb)
+                    overlapped = True
+                    break
+                else:
+                    pass
     
             if overlapped:
                 continue
@@ -145,9 +179,9 @@ class Bezier:
             px,py = p.x, p.y
             dx,dy = (5,0)
             ps = []
+            b = Bezier(Point(px,py),Point(px+dx,py+dy),
+                       Point(px+dx,py+dy),Point(px+2*dx,py+2*dy))
             for y in others:
-                b = Bezier(Point(px,py),Point(px+dx,py+dy),
-                           Point(px+dx,py+dy),Point(px+2*dx,py+2*dy))
                 i,os = b.isectB(y)
                 ps.extend(i)
             if len(ps)%2 == 1:
@@ -167,8 +201,10 @@ def merge(xs):
         to = max(to,(xta+xto)/2)
     return [(ta,to)]
 
+kludge = 2000
+
 def isect_raw(xs, a, b, n):
-    if len(xs) > 10000:
+    if len(xs) > kludge:
         return (xs, merge(xs))
     else:
         ys = [r

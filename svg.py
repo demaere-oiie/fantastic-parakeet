@@ -1,3 +1,5 @@
+from topo import connect
+
 serno = 0
 
 def writefile(s,pre="test"):
@@ -72,79 +74,3 @@ def svgout3(xs,pre="test"):
     <path stroke="blue" stroke-width="0.1" fill="#8080ff" d="{strokes2(xs)}" />
 </svg>
     ''',pre)
-
-def trim(xs):
-    while 1:
-        ys = [x for x in xs if sum(x.b0.close(q) for y in xs for q in (y.b0,y.b3))>1 and sum(x.b3.close(q) for y in xs for q in (y.b0,y.b3))>1]
-        if len(xs)==len(ys):
-            break
-        xs = ys[:]
-    return ys
-
-def connect(xs):
-    #xs = trim(xs)
-    if not(xs): return xs
-
-    ys = connect1(xs)
-    if not ys:
-        xs = trim(xs)
-        ys = connect1(xs)
-
-    return xs
-
-    yys = [(len(ys),ys[:]) for i in range(len(xs))
-                   for ys in [connect1(xs[i:]+xs[:i])]]
-    maxl = max(l for (l,ys) in yys)
-    #print(len(xs), [l for l,y in yys])
-    for l,ys in yys:
-        if l == maxl:
-            return ys
-
-def connect1(xs,tol=1e3,dbg=False):
-    #for i,x in enumerate(xs):
-    #    print(i,x)
-    oxs = xs[:]
-    ys, good = [],0
-    if not xs: return xs
-    pt = xs[0].b0
-    z = pt
-    while xs:
-        for i,x in enumerate(xs):
-            if pt.close(x.b0,tol):
-                if dbg: print("chain",i)
-                ys.append(x)
-                pt = x.b3
-                xs = xs[:i]+xs[i+1:]
-                if pt.close(z,tol):
-                    if dbg: print("chain close")
-                    good = len(ys)+1
-                    if len(xs):
-                        pt = xs[0].b0
-                        z = pt
-                break
-        else:
-            for i,x in enumerate(xs):
-                if pt.close(x.b3,tol):
-                    if dbg: print("flip",i)
-                    # we need to reverse a bezier
-                    ys.append(x.flip())
-                    pt = x.b0
-                    xs = xs[:i]+xs[i+1:]
-                    if pt.close(z,tol):
-                        if dbg: print("flip close")
-                        good = len(ys)+1
-                        if len(xs):
-                            pt = xs[0].b0
-                            z = pt
-                    break
-            else:
-                if dbg: print("!!!")
-                return []
-                print("!!!!!!")
-                svgout3(ys,"connect")
-                svgout3(oxs,"connect")
-                return []
-    #print("-----")
-    #for y in ys:
-    #    print(y)
-    return ys[:good]

@@ -1,6 +1,7 @@
 from bezier import Bezier
 from dataclasses import dataclass
-from svg import connect, svgout3
+from svg import svgout3
+from topo import connect, trim
 
 @dataclass
 class Shape:
@@ -16,14 +17,19 @@ class Shape:
                         for r in u.splitsBy(self.bs)]))
 
     def beq(self, other):
-        return not self.bxor(other).bs
+        return not trim(nontriv(self.bxor(other).bs))
 
     def band(self, other):
         return Shape(connect(
             [r for b in self.bs
-               for r in b.inside(other.bs,0)] +
+               for r in b.inside(other.bs,None)] +
             [r for b in other.bs
-               for r in b.inside(self.bs,1)]))
+               for r in b.inside(self.bs,other.bs)]) or
+                     connect(
+            [r for b in self.bs
+               for r in b.inside(other.bs,self.bs)] +
+            [r for b in other.bs
+               for r in b.inside(self.bs,None)]))
 
     def ble(self, other):
         return self.band(other).beq(self)
@@ -32,16 +38,23 @@ class Shape:
         return self.band(other).bxor(self.bxor(other))
 
     def db_and(self, other):
+        for r in self.bs:
+            print("s",r)
+        for r in other.bs:
+            print("o",r)
         for r in [r for b in self.bs 
-                    for r in b.inside(other.bs,0)]:
+                    for r in b.inside(other.bs,None)]:
             print("0",r)
         for r in [r for b in other.bs
-                    for r in b.inside(self.bs,1)]:
+                    for r in b.inside(self.bs,other.bs)]:
             print("1",r)
-        svgout3([r for b in self.bs for r in b.inside(other.bs,0)]+
-                [r for b in other.bs for r in b.inside(self.bs,1)])
-        svgout3([r for b in self.bs for r in b.inside(other.bs,1)]+
-                [r for b in other.bs for r in b.inside(self.bs,0)])
+        for r in [r for b in self.bs
+                    for r in b.inside(other.bs,self.bs)]:
+            print("2",r)
+        svgout3([r for b in self.bs for r in b.inside(other.bs,None)]+
+                [r for b in other.bs for r in b.inside(self.bs,other.bs)])
+        svgout3([r for b in self.bs for r in b.inside(other.bs,self.bs)]+
+                [r for b in other.bs for r in b.inside(self.bs,None)])
         return self.band(other)
 
     def db_xor(self, other):
@@ -69,4 +82,4 @@ class Shape:
         return self
 
 def nontriv(bs):
-    return [b for b in bs if not b.b0.close(b.b3,1e2)]
+    return [b for b in bs if not b.b0.close(b.b3,1e3)]
