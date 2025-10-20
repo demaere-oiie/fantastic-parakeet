@@ -201,7 +201,7 @@ def merge(xs):
         to = max(to,(xta+xto)/2)
     return [(ta,to)]
 
-kludge = 2000
+kludge = 1500
 
 def isect_raw(xs, a, b, n):
     if len(xs) > kludge:

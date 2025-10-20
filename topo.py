@@ -9,7 +9,7 @@ def trim(xs):
     return ys
 
 def connect(xs):
-    return xs and (connect1(xs) or connect1(trim(xs)))
+    return xs and (connect1(xs) or connect1(trim(xs),dbg=True))
 
 def connect1(xs,tol=1e3,dbg=False):
     oxs = xs[:]
@@ -48,6 +48,5 @@ def connect1(xs,tol=1e3,dbg=False):
                     break
             else:
                 if dbg: print("!!!")
-                print("!!!!!!")
                 return []
     return ys[:good]
