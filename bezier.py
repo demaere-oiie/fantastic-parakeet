@@ -6,7 +6,7 @@ class Point:
     x: float
     y: float
 
-    def close(self, other, s=2):
+    def near(self, other, s=2):
         return abs(self.x-other.x)<s*Eps and abs(self.y-other.y)<s*Eps
 
     def lerp(self, other, t):
@@ -52,7 +52,7 @@ class Bezier:
                 t = mid(ta,to)
                 u = mid(ua,uo)
                 q = a.eval(t)
-                if not any(q.close(p,1e2) for p in ps):
+                if not any(q.near(p,1e2) for p in ps):
                     ys.append(t)
                     ps.append(q)
         return (ys,ms)
@@ -76,11 +76,11 @@ class Bezier:
             i,o = self.isectB(Bezier(y.b3,y.b3,y.b3,y.b3))
             isects.extend(i)
         isects = sorted((i for i in isects
-                        if not Point(i,0).close(Point(0,0),1e3) and
-                           not Point(i,0).close(Point(1,0),1e3)))
+                        if not Point(i,0).near(Point(0,0),1e3) and
+                           not Point(i,0).near(Point(1,0),1e3)))
         for a,o in zip([0.]+isects,isects+[1.]):
             keeps.append(self.subbez(a,o))
-        return [k for k in  keeps if not k.b0.close(k.b3)]
+        return [k for k in  keeps if not k.b0.near(k.b3)]
 
     def flip(self):
         return Bezier(self.b3, self.b2, self.b1, self.b0)
@@ -98,14 +98,14 @@ class Bezier:
             i,o = self.isectB(Bezier(o.b3,o.b3,p.b0,p.b0))
             isects.extend(i)
         isects = sorted((i for i in isects
-                        if not Point(i,0).close(Point(0,0),1e3) and
-                           not Point(i,0).close(Point(1,0),1e3)))
+                        if not Point(i,0).near(Point(0,0),1e3) and
+                           not Point(i,0).near(Point(1,0),1e3)))
         for a,o in zip([0.]+isects,isects+[1.]):
             sb = self.subbez(a,o)
     
             overlapped = False
             for (xa,xo) in olaps:
-                if selves is not None and Point(xa,xo).close(Point(0,1),1e3):
+                if selves is not None and Point(xa,xo).near(Point(0,1),1e3):
                     p = self.eval(0.5)
                     dx,dy = (5,0)
                     b = Bezier(Point(p.x-0.001,p.y),Point(p.x+dx,p.y+dy),
@@ -121,9 +121,9 @@ class Bezier:
                         keeps.append(self)
                     overlapped = True
                     break
-                elif Point(xa,xo).close(Point(a,o),1e3):
+                elif Point(xa,xo).near(Point(a,o),1e3):
                     if selves is not None:
-                        if Point(xa,xo).close(Point(0.,1.),1e3):
+                        if Point(xa,xo).near(Point(0.,1.),1e3):
                             xa = 0.
                             xo = 1.
                         p = self.subbez(xa,xo).eval(0.5)
@@ -159,7 +159,7 @@ class Bezier:
                 ps.extend(i)
             if len(ps)%2 == 1:
                 keeps.append(sb)
-        return [k for k in  keeps if not k.b0.close(k.b3)]
+        return [k for k in  keeps if not k.b0.near(k.b3)]
 
 def xor1d(bs,cs):
     ds = sorted(bs + cs)

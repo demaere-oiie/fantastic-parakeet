@@ -1,8 +1,8 @@
 def trim(xs):
     while 1:
         ys = [x for x in xs
-            if sum(x.b0.close(q) for y in xs for q in (y.b0,y.b3))>1 and
-               sum(x.b3.close(q) for y in xs for q in (y.b0,y.b3))>1 ]
+            if sum(x.b0.near(q) for y in xs for q in (y.b0,y.b3))>1 and
+               sum(x.b3.near(q) for y in xs for q in (y.b0,y.b3))>1 ]
         if len(xs)==len(ys):
             break
         xs = ys[:]
@@ -19,12 +19,12 @@ def connect1(xs,tol=1e3,dbg=False):
     z = pt
     while xs:
         for i,x in enumerate(xs):
-            if pt.close(x.b0,tol):
+            if pt.near(x.b0,tol):
                 if dbg: print("chain",i)
                 ys.append(x)
                 pt = x.b3
                 xs = xs[:i]+xs[i+1:]
-                if pt.close(z,tol):
+                if pt.near(z,tol):
                     if dbg: print("chain close")
                     good = len(ys)+1
                     if len(xs):
@@ -33,13 +33,13 @@ def connect1(xs,tol=1e3,dbg=False):
                 break
         else:
             for i,x in enumerate(xs):
-                if pt.close(x.b3,tol):
+                if pt.near(x.b3,tol):
                     if dbg: print("flip",i)
                     # we need to reverse a bezier
                     ys.append(x.flip())
                     pt = x.b0
                     xs = xs[:i]+xs[i+1:]
-                    if pt.close(z,tol):
+                    if pt.near(z,tol):
                         if dbg: print("flip close")
                         good = len(ys)+1
                         if len(xs):

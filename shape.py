@@ -18,23 +18,20 @@ class Shape:
     def beq(self, other):
         return not trim(nontriv(self.bxor(other).bs))
 
-    def band(self, other):
+    def band(self, other, last_pass=False):
         return Shape(connect(
-            [r for b in self.bs
-               for r in b.inside(other.bs,None)] +
-            [r for b in other.bs
-               for r in b.inside(self.bs,other.bs)]) or
-                     connect(
-            [r for b in self.bs
-               for r in b.inside(other.bs,self.bs)] +
-            [r for b in other.bs
-               for r in b.inside(self.bs,None)]))
+            [r for b in self.bs  for r in other.inside(b, None)] +
+            [r for b in other.bs for r in self.inside(b, other)]) or
+            ([] if last_pass else other.band(self, True).bs))
 
     def ble(self, other):
         return self.band(other).beq(self)
 
     def bor(self, other):
         return self.band(other).bxor(self.bxor(other))
+
+    def inside(self, bez, other=None):
+        return bez.inside(self.bs,other and other.bs)
 
     def db_and(self, other):
         from svg import svgout3
@@ -75,4 +72,4 @@ class Shape:
         return self.bxor(other)
 
 def nontriv(bs):
-    return [b for b in bs if not b.b0.close(b.b3,1e3)]
+    return [b for b in bs if not b.b0.near(b.b3,1e3)]
