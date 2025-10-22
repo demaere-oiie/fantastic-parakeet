@@ -69,5 +69,11 @@ class Shape:
 
         return nontriv(keeps,1)
 
+    def translate(self, x, y):
+        return Shape([Bezier(Point(b.b0.x+x,b.b0.y+y),
+                             Point(b.b1.x+x,b.b1.y+y),
+                             Point(b.b2.x+x,b.b2.y+y),
+                             Point(b.b3.x+x,b.b3.y+y)) for b in self.bs])
+
 def nontriv(bs,s=1e3):
     return [b for b in bs if not b.b0.near(b.b3,s)]

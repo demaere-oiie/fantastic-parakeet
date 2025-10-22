@@ -59,7 +59,7 @@ def strokes(xs):
 def svgout2(xs):
     writefile(f'''
 <svg viewBox="-1 -1 12 12" xmlns="http://www.w3.org/2000/svg">
-    <path stroke="blue" fill="#8080ff" d="{strokes(connect(xs))}" />
+    <path stroke-width="0.2" stroke="blue" fill="#8080ff" d="{strokes(connect(xs))}" />
 </svg>
     ''')
 

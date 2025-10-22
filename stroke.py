@@ -25,7 +25,6 @@ def thickline(p,q):
                 Point(p.x+unx+c*(-uny),p.y+uny+c*unx),Point(p.x+unx,p.y+uny))])
 
 def shapesum(ss):
-    svgout3([b for s in ss for b in s.bs])
     zero = Shape([])
     if not len(ss):
         return zero
