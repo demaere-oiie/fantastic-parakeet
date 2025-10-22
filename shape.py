@@ -1,6 +1,8 @@
-from bezier import Bezier
 from dataclasses import dataclass
-from topo import connect, trim
+
+from bezier import Bezier
+from point  import Point
+from topo   import connect, trim
 
 @dataclass
 class Shape:
@@ -15,14 +17,14 @@ class Shape:
                         for u in b.uncovered(self.bs)
                         for r in u.splitsBy(self.bs)]))
 
-    def beq(self, other):
-        return not trim(nontriv(self.bxor(other).bs))
-
     def band(self, other, last_pass=False):
         return Shape(connect(
             [r for b in self.bs  for r in other.inside(b, None)] +
             [r for b in other.bs for r in self.inside(b, other)]) or
             ([] if last_pass else other.band(self, True).bs))
+
+    def beq(self, other):
+        return not trim(nontriv(self.bxor(other).bs))
 
     def ble(self, other):
         return self.band(other).beq(self)
@@ -31,45 +33,41 @@ class Shape:
         return self.band(other).bxor(self.bxor(other))
 
     def inside(self, bez, other=None):
-        return bez.inside(self.bs,other and other.bs)
+        self, others, selves = bez, self.bs, (other and other.bs)
+        isects, olaps, keeps = [],[],[]
+        for y in others:
+            i,o = self.isectB(y)
+            isects.extend(i)
+            olaps.extend(o)
+        c = connect(others)
+        for o,p in zip(c,c[1:]+c[:1]):
+            isects.extend(self.isectB(Bezier(o.b3,o.b3,p.b0,p.b0))[0])
+        isects = sorted((i for i in isects
+                        if not Point(i,0).near(Point(0,0),1e3) and
+                           not Point(i,0).near(Point(1,0),1e3)))
+        for a,o in zip([0.]+isects,isects+[1.]):
+            sb = self.subbez(a,o)
 
-    def db_and(self, other):
-        from svg import svgout3
-        for r in self.bs:
-            print("s",r)
-        for r in other.bs:
-            print("o",r)
-        for r in [r for b in self.bs 
-                    for r in b.inside(other.bs,None)]:
-            print("0",r)
-        for r in [r for b in other.bs
-                    for r in b.inside(self.bs,other.bs)]:
-            print("1",r)
-        for r in [r for b in self.bs
-                    for r in b.inside(other.bs,self.bs)]:
-            print("2",r)
-        svgout3([r for b in self.bs for r in b.inside(other.bs,None)]+
-                [r for b in other.bs for r in b.inside(self.bs,other.bs)])
-        svgout3([r for b in self.bs for r in b.inside(other.bs,self.bs)]+
-                [r for b in other.bs for r in b.inside(self.bs,None)])
-        return self.band(other)
+            overlapped = False
+            for (xa,xo) in olaps:
+                if selves is not None and Point(xa,xo).near(Point(0,1),1e3):
+                    if self.testRay().testEdge(others,selves):
+                        keeps.append(self)
+                    overlapped = True
+                    break
+                elif Point(xa,xo).near(Point(a,o),1e3):
+                    if selves is not None:
+                        if Point(xa,xo).near(Point(0.,1.),1e3):
+                            xa,xo = 0,1
+                        if self.subbez(xa,xo).testRay().testEdge(others,selves):
+                            keeps.append(sb)
+                    overlapped = True
+                    break
 
-    def db_xor(self, other):
-        print("----")
-        for b in self.bs:
-          print("b",b)
-          for u in b.uncovered(other.bs):
-            print("u",u)
-            for r in u.splitsBy(other.bs):
-              print(":",r)
-        print("----")
-        for b in other.bs:
-          print("b",b)
-          for u in b.uncovered(self.bs):
-            print("u",u)
-            for r in u.splitsBy(self.bs):
-              print(":",r)
-        return self.bxor(other)
+            if not (overlapped or sb.testRay().testEdge(others,[])):
+                keeps.append(sb)
 
-def nontriv(bs):
-    return [b for b in bs if not b.b0.near(b.b3,1e3)]
+        return nontriv(keeps,1)
+
+def nontriv(bs,s=1e3):
+    return [b for b in bs if not b.b0.near(b.b3,s)]

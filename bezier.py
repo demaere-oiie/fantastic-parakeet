@@ -1,17 +1,7 @@
 from dataclasses import dataclass
-from svg import connect
 
-@dataclass
-class Point:
-    x: float
-    y: float
-
-    def near(self, other, s=2):
-        return abs(self.x-other.x)<s*Eps and abs(self.y-other.y)<s*Eps
-
-    def lerp(self, other, t):
-        return Point(self.x + t*(other.x-self.x),
-                     self.y + t*(other.y-self.y))
+from bezutil import isect_raw, mid, xor1d
+from point   import Point
 
 @dataclass
 class Bezier:
@@ -45,12 +35,10 @@ class Bezier:
     def isectB(self, other):
         a, b = self, other
         xs,ms = isect_raw([(a,b,0.,1.,0.,1.,'d')],a,b,0)
-        ys = []
-        ps = []
+        ys, ps = [], []
         for b1,b2,ta,to,ua,uo,xx in xs:
             if xx=='x':
                 t = mid(ta,to)
-                u = mid(ua,uo)
                 q = a.eval(t)
                 if not any(q.near(p,1e2) for p in ps):
                     ys.append(t)
@@ -60,21 +48,17 @@ class Bezier:
     def uncovered(self, others):
         olap = [0.,1.]
         for c in others:
-            ys, ms = self.isectB(c)
-            olap = xor1d(olap,[r for m in ms for r in m[:2]])
+            olap = xor1d(olap,[r for m in self.isectB(c)[1] for r in m[:2]])
         if olap == [0.,1.]: return [self]
         return [self.subbez(a,o) for (a,o) in zip(olap[0::2],olap[1::2])]
 
     def splitsBy(self, others):
-        isects = []
-        keeps = []
+        isects, keeps = [], []
         for y in others:
             i,o = self.isectB(y)
-            isects.extend(i)
-            i,o = self.isectB(Bezier(y.b0,y.b0,y.b0,y.b0))
-            isects.extend(i)
-            i,o = self.isectB(Bezier(y.b3,y.b3,y.b3,y.b3))
-            isects.extend(i)
+            isects.extend(self.isectB(y)[0])
+            isects.extend(self.isectB(Bezier(y.b0,y.b0,y.b0,y.b0))[0])
+            isects.extend(self.isectB(Bezier(y.b3,y.b3,y.b3,y.b3))[0])
         isects = sorted((i for i in isects
                         if not Point(i,0).near(Point(0,0),1e3) and
                            not Point(i,0).near(Point(1,0),1e3)))
@@ -82,140 +66,13 @@ class Bezier:
             keeps.append(self.subbez(a,o))
         return [k for k in  keeps if not k.b0.near(k.b3)]
 
-    def flip(self):
-        return Bezier(self.b3, self.b2, self.b1, self.b0)
+    def testRay(self):
+        p = self.eval(0.5)
+        dx,dy = (5,0)
+        return Bezier(Point(p.x-0.001,p.y),Point(p.x+dx,p.y+dy),
+                      Point(p.x+dx,p.y+dy),Point(p.x+2*dx,p.y+2*dy))
 
-    def inside(self, others, selves):
-        isects = []
-        olaps = []
-        keeps = []
-        for y in others:
-            i,o = self.isectB(y)
-            isects.extend(i)
-            olaps.extend(o)
-        c = connect(others)
-        for o,p in zip(others,others[1:]+others[:1]):
-            i,o = self.isectB(Bezier(o.b3,o.b3,p.b0,p.b0))
-            isects.extend(i)
-        isects = sorted((i for i in isects
-                        if not Point(i,0).near(Point(0,0),1e3) and
-                           not Point(i,0).near(Point(1,0),1e3)))
-        for a,o in zip([0.]+isects,isects+[1.]):
-            sb = self.subbez(a,o)
-    
-            overlapped = False
-            for (xa,xo) in olaps:
-                if selves is not None and Point(xa,xo).near(Point(0,1),1e3):
-                    p = self.eval(0.5)
-                    dx,dy = (5,0)
-                    b = Bezier(Point(p.x-0.001,p.y),Point(p.x+dx,p.y+dy),
-                               Point(p.x+dx,p.y+dy),Point(p.x+2*dx,p.y+2*dy))
-                    ps,qs = [],[]
-                    for y in others:
-                        i,_ = b.isectB(y)
-                        ps.extend(i)
-                    for y in selves:
-                        i,_ = b.isectB(y)
-                        qs.extend(i)
-                    if len(ps)%2 == len(qs)%2:
-                        keeps.append(self)
-                    overlapped = True
-                    break
-                elif Point(xa,xo).near(Point(a,o),1e3):
-                    if selves is not None:
-                        if Point(xa,xo).near(Point(0.,1.),1e3):
-                            xa = 0.
-                            xo = 1.
-                        p = self.subbez(xa,xo).eval(0.5)
-                        dx,dy = (5,0)
-                        b = Bezier(Point(p.x-0.001,p.y),Point(p.x+dx,p.y+dy),
-                                   Point(p.x+dx,p.y+dy),Point(p.x+2*dx,p.y+2*dy))
-                        ps,qs = [],[]
-                        for y in others:
-                            i,_ = b.isectB(y)
-                            ps.extend(i)
-                        for y in selves:
-                            i,_ = b.isectB(y)
-                            qs.extend(i)
-                        if len(ps)%2 == len(qs)%2:
-                            keeps.append(sb)
-                    overlapped = True
-                    break
-                else:
-                    pass
-    
-            if overlapped:
-                continue
-    
-            ls = []
-            p = sb.eval(0.5)
-            px,py = p.x, p.y
-            dx,dy = (5,0)
-            ps = []
-            b = Bezier(Point(px,py),Point(px+dx,py+dy),
-                       Point(px+dx,py+dy),Point(px+2*dx,py+2*dy))
-            for y in others:
-                i,os = b.isectB(y)
-                ps.extend(i)
-            if len(ps)%2 == 1:
-                keeps.append(sb)
-        return [k for k in  keeps if not k.b0.near(k.b3)]
-
-def xor1d(bs,cs):
-    ds = sorted(bs + cs)
-    return [d for i,d in enumerate(ds)
-              if not any((c-d)**2<1e-6 for c in ds[:i]+ds[i+1:])]
-
-def merge(xs):
-    # it's wrong, but for now assume at most one overlap
-    ta, to = 1.0, 0.0
-    for b1,b2,xta,xto,xua,xuo,xx in xs:
-        ta = min(ta,(xta+xto)/2)
-        to = max(to,(xta+xto)/2)
-    return [(ta,to)]
-
-kludge = 1500
-
-def isect_raw(xs, a, b, n):
-    if len(xs) > kludge:
-        return (xs, merge(xs))
-    else:
-        ys = [r
-          for _ in [min]
-          for meas in [lambda w: _(xo-xa+yo-ya
-                              for xa,ya,xo,yo in [w])]
-          for area in [lambda w: _((xo-xa)*(yo-ya)
-                              for xa,ya,xo,yo in [w])]
-          for very_small in [lambda w: _((xo-xa<=Eps) and (yo-ya<=Eps)
-                              for xa,ya,xo,yo in [w])]
-          for disjoint in [lambda b,c: _( bxo < cxa or cxo < bxa or
-                                          byo < cya or cyo < bya
-              for bxa,bya,bxo,byo in [b]
-              for cxa,cya,cxo,cyo in [c])]
-
-            for b1,b2,ta,to,ua,uo,xx in xs
-            for bb1 in [b1.bbox()]
-            for bb2 in [b2.bbox()]
-          for st,su in [(0.5,0.5)]
-          for b11,b12 in [b1.split(st)]
-          for b21,b22 in [b2.split(su)]
-          for small_bb1 in [very_small(bb1) or b11==b1]
-          for small_bb2 in [very_small(bb2) or b21==b2]
-          for r in ([] if (ta>to or ua>uo or disjoint(bb1,bb2)) else
-              [(b1,b2,ta,to,ua,uo,'x')] if
-                  small_bb1 and small_bb2 and area(bb1) + area(bb2) <= Eps else
-            _([(b1,b21,ta,to,ua,um,''),
-               (b1,b22,ta,to,um,uo,'')]
-                   for um in [mid(ua,uo)]) if meas(bb1) < meas(bb2) else
-            _([(b11,b2,ta,tm,ua,uo,''),
-               (b12,b2,tm,to,ua,uo,'')]
-                   for tm in [mid(ta,to)])) ]
-    if xs == ys:
-        return (xs, [])
-    return isect_raw(ys, a, b, n+1)
-
-Eps = 1e-5
-
-mid = lambda x,y: x + 0.5*(y-x)
-
-close = lambda x,y: (y-x)**2<1e-2
+    def testEdge(self,others,selves):
+        ps = [r for y in others for r in self.isectB(y)[0]]
+        qs = [r for y in selves for r in self.isectB(y)[0]]
+        return len(ps)%2 == len(qs)%2

@@ -1,3 +1,5 @@
+from bezier import Bezier
+
 def trim(xs):
     while 1:
         ys = [x for x in xs
@@ -20,12 +22,10 @@ def connect1(xs,tol=1e3,dbg=False):
     while xs:
         for i,x in enumerate(xs):
             if pt.near(x.b0,tol):
-                if dbg: print("chain",i)
                 ys.append(x)
                 pt = x.b3
                 xs = xs[:i]+xs[i+1:]
                 if pt.near(z,tol):
-                    if dbg: print("chain close")
                     good = len(ys)+1
                     if len(xs):
                         pt = xs[0].b0
@@ -34,13 +34,11 @@ def connect1(xs,tol=1e3,dbg=False):
         else:
             for i,x in enumerate(xs):
                 if pt.near(x.b3,tol):
-                    if dbg: print("flip",i)
                     # we need to reverse a bezier
-                    ys.append(x.flip())
+                    ys.append(Bezier(x.b3,x.b2,x.b1,x.b0))
                     pt = x.b0
                     xs = xs[:i]+xs[i+1:]
                     if pt.near(z,tol):
-                        if dbg: print("flip close")
                         good = len(ys)+1
                         if len(xs):
                             pt = xs[0].b0

@@ -1,4 +1,5 @@
-from bezier import Bezier, Point
+from bezier import Bezier
+from point import Point
 from shape import Shape
 
 def B(*ps):
