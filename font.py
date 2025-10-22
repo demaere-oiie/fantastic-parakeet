@@ -1,11 +1,6 @@
-from point   import Point
-from stroke  import thickpoly
-from svg     import svgout2, svgout3
-
-#svgout2(thickpoly([Point(1,1),Point(1,5),Point(5,5),Point(5,1)]).bs)
-
 from hershey import glyphs
+from svg     import svgout2
+from sys     import argv
 
-svgout2(glyphs('we do this').bs)
-svgout2(glyphs('not because').bs)
-svgout2(glyphs('it is easy').bs)
+gs = [glyphs(arg,5*i) for i,arg in enumerate(argv[1:])]
+svgout2(sum([g.bs for g in gs],[]))

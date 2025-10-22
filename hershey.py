@@ -20,10 +20,9 @@ def glyph(c):
     n = ord(c)-32 if 32 <= ord(c) <= 126 else 127-32
     return render(n)
 
-def glyphs(s):
+def glyphs(s,y=0):
     gs = [glyph(c) for c in s]
-    print([sum(w for w,s in gs[:i]) for i,(w,s) in enumerate(gs)])
-    return shapesum([s.translate(sum(w for w,s in gs[:i]),0)
+    return shapesum([s.translate(sum(w for w,s in gs[:i]),y)
                      for i,(w,s) in enumerate(gs)])
 
 simplex = [
