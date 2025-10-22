@@ -48,7 +48,7 @@ def strokes(xs):
     while xs:
         p = xs[0].b0
         for j,x in enumerate(xs):
-            if x.b3.close(p,1e3):
+            if x.b3.near(p,1e3):
                 s += f"M {p.x},{p.y} "+" ".join(
                      f"C {b.b1.x},{b.b1.y} {b.b2.x},{b.b2.y} {b.b3.x},{b.b3.y}"
                      for b in xs[:j+1])+"Z"

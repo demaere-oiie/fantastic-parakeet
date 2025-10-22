@@ -1,6 +1,6 @@
 from bezier import Bezier
-from point import Point
-from shape import Shape
+from point  import Point
+from shape  import Shape
 
 def B(*ps):
     return Bezier(*[Point(*p) for p in ps])
