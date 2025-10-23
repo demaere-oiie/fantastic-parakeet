@@ -1,29 +1,50 @@
 from point  import Point
 from shape  import Shape
 from stroke import shapesum, thickline
+from topo   import connect
+
+scale = 1/5.
+cache = dict()
+
+def setscale(x):
+    global scale
+    scale = x
 
 def render(n):
-    scale = 1/7.
-    wid,pts = simplex[n]
-    ox, oy = -1,-1
-    ls = []
-    for x,y in zip(pts[0::2],pts[1::2]):
-        draw = (x != -1 or y != -1)
-        nx =   scale*x if draw else -1
-        ny = 5-scale*y if draw else -1
-        if ox != -1 and oy != -1 and nx != -1 and ny != -1:
-            ls.append(thickline(Point(ox,oy),Point(nx,ny)))
-        ox,oy = nx,ny
-    return (wid*scale, shapesum([Shape(l) for l in ls]))
+    if n not in cache:
+        print(f"render '{chr(n+32)}'")
+        wid,pts = simplex[n]
+        ox, oy = -1,-1
+        ls = []
+        for x,y in zip(pts[0::2],pts[1::2]):
+            draw = (x != -1 or y != -1)
+            nx =   scale*x if draw else -1
+            ny = 5-scale*y if draw else -1
+            if ox != -1 and oy != -1 and nx != -1 and ny != -1:
+                ls.append(thickline(Point(ox,oy),Point(nx,ny)))
+            ox,oy = nx,ny
+        cache[n] = (wid*scale,
+                    Shape(connect(shapesum([Shape(l) for l in ls]).bs)))
+    return cache[n]
 
 def glyph(c):
     n = ord(c)-32 if 32 <= ord(c) <= 126 else 127-32
     return render(n)
 
-def glyphs(s,y=0):
+def glyphs(s,y=0,wid=0,align="left"):
     gs = [glyph(c) for c in s]
-    return shapesum([s.translate(sum(w for w,s in gs[:i]),y)
-                     for i,(w,s) in enumerate(gs)])
+    extra = wid - sum(w for w,s in gs) if wid else 0
+    nspace = sum(len(s.bs)==0 for w,s in gs)
+    if align=="full":
+      gs2 = [(w if len(s.bs) else w+extra/nspace,s) for w,s in gs]
+    elif align=="center":
+      gs2 = [(extra/2,Shape([]))]+gs
+    elif align=="right":
+      gs2 = [(extra,Shape([]))]+gs
+    else:
+      gs2 = gs
+    return Shape([b for i,(w,s) in enumerate(gs2)
+                    for b in s.translate(sum(w for w,s in gs2[:i]),y).bs])
 
 simplex = [
 [16, [] ],

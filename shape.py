@@ -75,5 +75,11 @@ class Shape:
                              Point(b.b2.x+x,b.b2.y+y),
                              Point(b.b3.x+x,b.b3.y+y)) for b in self.bs])
 
+    def scale(self, v):
+        return Shape([Bezier(Point(b.b0.x*v,b.b0.y*v),
+                             Point(b.b1.x*v,b.b1.y*v),
+                             Point(b.b2.x*v,b.b2.y*v),
+                             Point(b.b3.x*v,b.b3.y*v)) for b in self.bs])
+
 def nontriv(bs,s=1e3):
     return [b for b in bs if not b.b0.near(b.b3,s)]

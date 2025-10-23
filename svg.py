@@ -43,23 +43,26 @@ def svgout(bs,cs,xs):
     '''
     writefile(s)
 
-def strokes(xs):
+def strokes(xs,n=1e3):
     s = ""
     while xs:
         p = xs[0].b0
         for j,x in enumerate(xs):
-            if x.b3.near(p,1e3):
+            if x.b3.near(p,n):
                 s += f"M {p.x},{p.y} "+" ".join(
                      f"C {b.b1.x},{b.b1.y} {b.b2.x},{b.b2.y} {b.b3.x},{b.b3.y}"
                      for b in xs[:j+1])+"Z"
                 xs = xs[j+1:]
                 break
+        else:
+            print("++++")
+            n = 2*n
     return s
 
-def svgout2(xs):
+def svgout2(xs, width=0.1):
     writefile(f'''
-<svg viewBox="-1 -1 24 12" xmlns="http://www.w3.org/2000/svg">
-    <path stroke-width="0.1" stroke="blue" fill="#8080ff" d="{strokes(connect(xs))}" />
+<svg viewBox="-1 -1 12 12" xmlns="http://www.w3.org/2000/svg">
+    <path stroke-width="{width}" stroke="blue" fill="#8080ff" d="{strokes(connect(xs))}" />
 </svg>
     ''')
 
@@ -74,3 +77,10 @@ def svgout3(xs,pre="test"):
     <path stroke="blue" stroke-width="0.1" fill="#8080ff" d="{strokes2(xs)}" />
 </svg>
     ''',pre)
+
+def svgout4(xs):
+    writefile(f'''
+<svg viewBox="-1 -1 12 12" xmlns="http://www.w3.org/2000/svg">
+    <path stroke-width="0" stroke="blue" fill="#8080ff" d="{strokes(xs,1e2)}" />
+</svg>
+    ''')

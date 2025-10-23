@@ -3,6 +3,12 @@ from point  import Point
 from shape  import Shape
 from svg    import svgout3
 
+shrink = 3
+
+def setshrink(x):
+    global shrink
+    shrink = x
+
 def line(p,q):
     return [Bezier(p,q,p,q)]
 
@@ -14,7 +20,7 @@ def norm(x,y):
 
 def thickline(p,q):
     dx, dy = (q.x-p.x, q.y-p.y)
-    scale  = 3*norm(dx,dy)
+    scale  = shrink*norm(dx,dy)
     unx, uny = -dy/scale, dx/scale
     c = 1.3
     return (line(Point(p.x+unx,p.y+uny), Point(q.x+unx,q.y+uny)) +
