@@ -16,7 +16,9 @@ def italic(s):
         return Point(p.x - 0.2*p.y, p.y)
     return Shape([Bezier(*map(xform,[b.b0,b.b1,b.b2,b.b3])) for b in s.bs])
 
-def glyph(c, style):
+def glyph(x):
+    c = x[0] if isinstance(x,tuple) else x
+    style = ''.join(sorted(x[1])) if isinstance(x,tuple) else ""
     n = ord(c)-32 if 32 <= ord(c) <= 126 else 127-32
     if (n, style) not in cache:
         print(f"render '{chr(n+32)}' {style}")
@@ -37,9 +39,8 @@ def glyph(c, style):
         cache[(n,style)] = (wid*scale,s if "i" not in style else italic(s))
     return cache[(n,style)]
 
-def glyphs(s,y=0,wid=0,style="",align="left"):
-    style = ''.join(sorted(style))
-    gs = [glyph(c, style) for c in s]
+def glyphs(s,y=0,wid=0,align="left"):
+    gs = [glyph(c) for c in s]
     extra = wid - sum(w for w,s in gs) if wid else 0
     nspace = sum(len(s.bs)==0 for w,s in gs)
     if align=="full":
