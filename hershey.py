@@ -1,3 +1,4 @@
+from bezier import Bezier
 from point  import Point
 from shape  import Shape
 from stroke import shapesum, thickline
@@ -10,9 +11,15 @@ def setscale(x):
     global scale
     scale = x
 
-def render(n):
-    if n not in cache:
-        print(f"render '{chr(n+32)}'")
+def italic(s):
+    def xform(p):
+        return Point(p.x - 0.2*p.y, p.y)
+    return Shape([Bezier(*map(xform,[b.b0,b.b1,b.b2,b.b3])) for b in s.bs])
+
+def glyph(c, style):
+    n = ord(c)-32 if 32 <= ord(c) <= 126 else 127-32
+    if (n, style) not in cache:
+        print(f"render '{chr(n+32)}' {style}")
         wid,pts = simplex[n]
         ox, oy = -1,-1
         ls = []
@@ -21,18 +28,18 @@ def render(n):
             nx =   scale*x if draw else -1
             ny = 5-scale*y if draw else -1
             if ox != -1 and oy != -1 and nx != -1 and ny != -1:
-                ls.append(thickline(Point(ox,oy),Point(nx,ny)))
+                ls.append(thickline(Point(ox,oy),Point(nx,ny),
+                                    1.2 if "b" in style else 1))
             ox,oy = nx,ny
-        cache[n] = (wid*scale,
-                    Shape(connect(shapesum([Shape(l) for l in ls]).bs)))
-    return cache[n]
+        if "s" in style:
+            ls.append(thickline(Point(0,25*scale),Point(wid*scale,25*scale),1))
+        s = Shape(connect(shapesum([Shape(l) for l in ls]).bs))
+        cache[(n,style)] = (wid*scale,s if "i" not in style else italic(s))
+    return cache[(n,style)]
 
-def glyph(c):
-    n = ord(c)-32 if 32 <= ord(c) <= 126 else 127-32
-    return render(n)
-
-def glyphs(s,y=0,wid=0,align="left"):
-    gs = [glyph(c) for c in s]
+def glyphs(s,y=0,wid=0,style="",align="left"):
+    style = ''.join(sorted(style))
+    gs = [glyph(c, style) for c in s]
     extra = wid - sum(w for w,s in gs) if wid else 0
     nspace = sum(len(s.bs)==0 for w,s in gs)
     if align=="full":

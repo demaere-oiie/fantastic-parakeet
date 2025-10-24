@@ -18,10 +18,10 @@ def poly(ps):
 def norm(x,y):
     return (x**2 + y**2)**0.5
 
-def thickline(p,q):
+def thickline(p,q,w):
     dx, dy = (q.x-p.x, q.y-p.y)
     scale  = shrink*norm(dx,dy)
-    unx, uny = -dy/scale, dx/scale
+    unx, uny = -dy/scale*w, dx/scale*w
     c = 1.3
     return (line(Point(p.x+unx,p.y+uny), Point(q.x+unx,q.y+uny)) +
         [Bezier(Point(q.x+unx,q.y+uny),Point(q.x+unx+c*uny,q.y+uny+c*(-unx)),

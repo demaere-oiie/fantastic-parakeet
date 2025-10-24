@@ -81,6 +81,6 @@ def svgout3(xs,pre="test"):
 def svgout4(xs):
     writefile(f'''
 <svg viewBox="-1 -1 12 12" xmlns="http://www.w3.org/2000/svg">
-    <path stroke-width="0" stroke="blue" fill="#8080ff" d="{strokes(xs,1e2)}" />
+    <path stroke-width="0" stroke="blue" fill="black" d="{strokes(xs,1e2)}" />
 </svg>
     ''')
