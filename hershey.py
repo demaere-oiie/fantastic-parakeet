@@ -13,7 +13,7 @@ def setscale(x):
 
 def italic(s):
     def xform(p):
-        return Point(p.x - 0.2*p.y, p.y)
+        return Point(p.x + 1 - 0.2*p.y, p.y)
     return Shape([Bezier(*map(xform,[b.b0,b.b1,b.b2,b.b3])) for b in s.bs])
 
 def glyph(x):
@@ -31,13 +31,17 @@ def glyph(x):
             ny = 5-scale*y if draw else -1
             if ox != -1 and oy != -1 and nx != -1 and ny != -1:
                 ls.append(thickline(Point(ox,oy),Point(nx,ny),
-                                    1.2 if "b" in style else 1))
+                                    1.3 if "b" in style else 1))
             ox,oy = nx,ny
-        if "s" in style:
-            ls.append(thickline(Point(0,25*scale),Point(wid*scale,25*scale),1))
-        s = Shape(connect(shapesum([Shape(l) for l in ls]).bs))
+        ss =([] if "s" not in style else
+             thickline(Point(0,25*scale),Point(wid*scale,25*scale),1))
+        s = Shape(connect(shapesum([Shape(l) for l in ls]).bs)+ss)
         cache[(n,style)] = (wid*scale,s if "i" not in style else italic(s))
     return cache[(n,style)]
+
+def width(s):
+    cton = lambda c: ord(c)-32 if 32<=ord(c)<=126 else 127-32
+    return sum(simplex[cton(c)][0] for c in s)*scale
 
 def glyphs(s,y=0,wid=0,align="left"):
     gs = [glyph(c) for c in s]
