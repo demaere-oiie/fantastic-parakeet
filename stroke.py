@@ -10,7 +10,7 @@ def setshrink(x):
     shrink = x
 
 def line(p,q):
-    return [Bezier(p,q,p,q)]
+    return [Bezier(p,p.lerp(q,0.33),q.lerp(p,0.33),q)]
 
 def poly(ps):
     return sum([line(a,b) for a,b in zip(ps,ps[1:]+ps[:1])],[])
