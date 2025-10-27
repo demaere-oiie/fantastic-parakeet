@@ -1,6 +1,7 @@
 from dataclasses import dataclass
 
 from bezier import Bezier
+from math   import pi, sin, cos
 from point  import Point
 from topo   import connect, trim
 
@@ -80,6 +81,19 @@ class Shape:
                              Point(b.b1.x*v,b.b1.y*v),
                              Point(b.b2.x*v,b.b2.y*v),
                              Point(b.b3.x*v,b.b3.y*v)) for b in self.bs])
+
+    def rot(self, a):
+        rad = a * (pi/180)
+        c, s = cos(rad), sin(rad)
+        return Shape([Bezier(Point(b.b0.x*c - b.b0.y*s,
+                                   b.b0.x*s + b.b0.y*c),
+                             Point(b.b1.x*c - b.b1.y*s,
+                                   b.b1.x*s + b.b1.y*c),
+                             Point(b.b2.x*c - b.b2.y*s,
+                                   b.b2.x*s + b.b2.y*c),
+                             Point(b.b3.x*c - b.b3.y*s,
+                                   b.b3.x*s + b.b3.y*c))
+                             for b in self.bs])
 
 def nontriv(bs,s=1e3):
     return [b for b in bs if not b.b0.near(b.b3,s)]

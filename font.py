@@ -23,17 +23,21 @@ styles = ["","b","i","ib","s","sb","si","sib"][::-1]
 #                    for c,z in [(c,s) for c in w]+[(" ","")]],5*(i//4),0)
 #      for i in range(0,len(ws),4)]
 
-WID = 60 if len(argv)<2 else int(argv[1])
-ws = lorem[:]
-gs = []
-while ws:
-    i = 0
-    while width(" ".join(ws[:i])) < WID and len(ws[i:]):
-        i = i+1
-    if width(" ".join(ws[:i])) > WID:
-        i = i-1
-    print(ws[:i])
-    gs.append(glyphs(" ".join(w for w in ws[:i]),
-                     5*len(gs), WID, align="full" if ws[i:] else "left"))
-    ws = ws[i:]
-svgout4([b for g in gs for b in g.scale(.05).bs])
+#WID = 60 if len(argv)<2 else int(argv[1])
+#ws = lorem[:]
+#gs = []
+#while ws:
+#    i = 0
+#    while width(" ".join(ws[:i])) < WID and len(ws[i:]):
+#        i = i+1
+#    if width(" ".join(ws[:i])) > WID:
+#        i = i-1
+#    print(ws[:i])
+#    gs.append(glyphs(" ".join(w for w in ws[:i]),
+#                     5*len(gs), WID, align="full" if ws[i:] else "left"))
+#    ws = ws[i:]
+
+gs = [glyphs(s,5*i,0) for i,s in enumerate(argv[1:])]
+svgout4([b for g in gs for g1 in [g.scale(.05)]
+           for a in [72,144,216,288,0]
+           for b in g1.rot(a).translate(6,6).bs])
