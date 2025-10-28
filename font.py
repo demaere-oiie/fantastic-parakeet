@@ -76,15 +76,15 @@ def curl(argv):
                g.scale(.1).curl(w*.1).translate(3,3).bs])
 
 cmds = {
-"-l": left, "--left": left,
-"-r": right, "--right": right,
+"-l": left,   "--left": left,
+"-r": right,  "--right": right,
 "-c": center, "--center": center,
-"-f": full, "--full": full,
-"-y": style, "--style": style,
-"-w": flow, "--flow": flow,
-"-r": rose, "--rose": rose,
+"-f": full,   "--full": full,
+"-y": style,  "--style": style,
+"-w": flow,   "--flow": flow,
+"-r": rose,   "--rose": rose,
 "-s": spiral, "--spiral": spiral,
-"-u": curl, "--curl": curl,
+"-u": curl,   "--curl": curl,
 }
 
 if not argv[1].startswith("-"):

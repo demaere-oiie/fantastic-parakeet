@@ -4,6 +4,8 @@ from shape  import Shape
 from stroke import shapesum, thickline
 from topo   import connect
 
+from pickle import dump, load
+
 scale = 1/5.
 cache = dict()
 
@@ -21,8 +23,13 @@ def glyph(x):
     style = ''.join(sorted(x[1])) if isinstance(x,tuple) else ""
     n = ord(c)-32 if 32 <= ord(c) <= 126 else 127-32
     if (n, style) not in cache:
-        print(f"render '{chr(n+32)}' {style}")
+      try:
         wid,pts = simplex[n]
+        f = open(str(n)+style+".p","rb")
+      except:
+        f = None
+      if not f:
+        print(f"render '{chr(n+32)}' {style}")
         ox, oy = -1,-1
         ls = []
         for x,y in zip(pts[0::2],pts[1::2]):
@@ -36,7 +43,12 @@ def glyph(x):
         ss =([] if "s" not in style else
              thickline(Point(0,25*scale),Point(wid*scale,25*scale),1))
         s = Shape(connect(shapesum([Shape(l) for l in ls]).bs)+ss)
-        cache[(n,style)] = (wid*scale,s if "i" not in style else italic(s))
+        f = open(str(n)+style+".p","wb")
+        dump(s,f)
+        f.close()
+      else:
+        s = load(f)
+      cache[(n,style)] = (wid*scale,s if "i" not in style else italic(s))
     return cache[(n,style)]
 
 def width(s):
