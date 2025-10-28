@@ -70,6 +70,11 @@ def spiral(argv):
     svgout4([b for g,w in gs for g1 in [g.scale(.05)]
                for b in g.translate(0,6).spiral().scale(.01).translate(6,6).bs])
 
+def curl(argv):
+    gs = [(glyphs(s,5*i,0),width(s)) for i,s in enumerate(argv)]
+    svgout4([b for g,w in gs for b in
+               g.scale(.1).curl(w*.1).translate(3,3).bs])
+
 cmds = {
 "-l": left, "--left": left,
 "-r": right, "--right": right,
@@ -79,6 +84,7 @@ cmds = {
 "-w": flow, "--flow": flow,
 "-r": rose, "--rose": rose,
 "-s": spiral, "--spiral": spiral,
+"-u": curl, "--curl": curl,
 }
 
 if not argv[1].startswith("-"):
