@@ -22,22 +22,22 @@ styles = ["","b","i","ib","s","sb","si","sib"][::-1]
 def left(argv):
     gs = [glyphs(s,5*i,0) for i,s in enumerate(argv)]
     svgout4([b for g in gs
-               for b in g.scale(.05).translate(6,6).bs])
+               for b in g.scale(.05).translate(2,2).bs])
 
 def right(argv):
-    gs = [glyphs(s,5*i,0) for i,s in enumerate(argv)]
+    gs = [glyphs(s,5*i,90,align="right") for i,s in enumerate(argv)]
     svgout4([b for g in gs
-               for b in g.scale(.05).translate(6,6).bs])
+               for b in g.scale(.05).translate(2,2).bs])
 
 def center(argv):
-    gs = [glyphs(s,5*i,0) for i,s in enumerate(argv)]
+    gs = [glyphs(s,5*i,90,align="center") for i,s in enumerate(argv)]
     svgout4([b for g in gs
-               for b in g.scale(.05).translate(6,6).bs])
+               for b in g.scale(.05).translate(2,2).bs])
 
 def full(argv):
-    gs = [glyphs(s,5*i,0) for i,s in enumerate(argv)]
+    gs = [glyphs(s,5*i,90,align="full") for i,s in enumerate(argv)]
     svgout4([b for g in gs
-               for b in g.scale(.05).translate(6,6).bs])
+               for b in g.scale(.05).translate(2,2).bs])
 
 def style(argv):
     ws = [(l,styles[i%8]) for i,l in enumerate(lorem[8:24])]
@@ -45,7 +45,7 @@ def style(argv):
                     for c,z in [(c,s) for c in w]+[(" ","")]],5*(i//4),0)
               for i in range(0,len(ws),4)]
     svgout4([b for g in gs
-               for b in g.scale(.05).translate(6,6).bs])
+               for b in g.scale(.05).translate(2,2).bs])
 
 def flow(argv):
     WID = 75 if len(argv)<1 else int(argv[0])
