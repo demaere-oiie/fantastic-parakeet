@@ -37,7 +37,6 @@ styles = ["","b","i","ib","s","sb","si","sib"][::-1]
 #                     5*len(gs), WID, align="full" if ws[i:] else "left"))
 #    ws = ws[i:]
 
-gs = [glyphs(s,5*i,0) for i,s in enumerate(argv[1:])]
-svgout4([b for g in gs for g1 in [g.scale(.05)]
-           for a in [72,144,216,288,0]
-           for b in g1.rot(a).translate(6,6).bs])
+gs = [(glyphs(s,5*i,0),width(s)) for i,s in enumerate(argv[1:])]
+svgout4([b for g,w in gs for g1 in [g.scale(.05)]
+           for b in g.translate(0,6).spiral().scale(.01).translate(6,6).bs])

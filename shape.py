@@ -95,5 +95,25 @@ class Shape:
                                    b.b3.x*s + b.b3.y*c))
                              for b in self.bs])
 
+    def curl(self, wid):
+        rad = -9.5 * wid * (pi/180)
+        return Shape([Bezier(Point(-b.b0.y * cos(b.b0.x/rad),
+                                   -b.b0.y * sin(b.b0.x/rad)),
+                             Point(-b.b1.y * cos(b.b1.x/rad),
+                                   -b.b1.y * sin(b.b1.x/rad)),
+                             Point(-b.b2.y * cos(b.b2.x/rad),
+                                   -b.b2.y * sin(b.b2.x/rad)),
+                             Point(-b.b3.y * cos(b.b3.x/rad),
+                                   -b.b3.y * sin(b.b3.x/rad)))
+                             for b in self.bs])
+
+    def spiral(self):
+        rad = -200 * (pi/180)
+        xform = lambda p: Point(-p.y * (1+(p.x/10*rad)) * cos(p.x/rad),
+                                -p.y * (1+(p.x/10*rad)) * sin(p.x/rad))
+        return Shape([Bezier(*[xform(p) for p in [b.b0,b.b1,b.b2,b.b3]])
+                             for b in self.bs])
+        
+
 def nontriv(bs,s=1e3):
     return [b for b in bs if not b.b0.near(b.b3,s)]
