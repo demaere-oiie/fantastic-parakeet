@@ -21,31 +21,26 @@ styles = ["","b","i","ib","s","sb","si","sib"][::-1]
 
 def left(argv):
     gs = [glyphs(s,5*i,0) for i,s in enumerate(argv)]
-    svgout4([b for g in gs
-               for b in g.scale(.05).translate(2,2).bs])
+    svgout4([b for g in gs for b in g.scale(.05).translate(2,2).bs])
 
 def right(argv):
-    gs = [glyphs(s,5*i,90,align="right") for i,s in enumerate(argv)]
-    svgout4([b for g in gs
-               for b in g.scale(.05).translate(2,2).bs])
+    gs = [glyphs(s,5*i,75,align="right") for i,s in enumerate(argv)]
+    svgout4([b for g in gs for b in g.scale(.05).translate(2,2).bs])
 
 def center(argv):
-    gs = [glyphs(s,5*i,90,align="center") for i,s in enumerate(argv)]
-    svgout4([b for g in gs
-               for b in g.scale(.05).translate(2,2).bs])
+    gs = [glyphs(s,5*i,75,align="center") for i,s in enumerate(argv)]
+    svgout4([b for g in gs for b in g.scale(.05).translate(2,2).bs])
 
 def full(argv):
-    gs = [glyphs(s,5*i,90,align="full") for i,s in enumerate(argv)]
-    svgout4([b for g in gs
-               for b in g.scale(.05).translate(2,2).bs])
+    gs = [glyphs(s,5*i,75,align="full") for i,s in enumerate(argv)]
+    svgout4([b for g in gs for b in g.scale(.05).translate(2,2).bs])
 
 def style(argv):
     ws = [(l,styles[i%8]) for i,l in enumerate(lorem[8:24])]
     gs = [glyphs([(c,z) for w,s in ws[i:i+4]
                     for c,z in [(c,s) for c in w]+[(" ","")]],5*(i//4),0)
               for i in range(0,len(ws),4)]
-    svgout4([b for g in gs
-               for b in g.scale(.05).translate(2,2).bs])
+    svgout4([b for g in gs for b in g.scale(.05).translate(2,2).bs])
 
 def flow(argv):
     WID = 75 if len(argv)<1 else int(argv[0])
@@ -64,6 +59,12 @@ def flow(argv):
     svgout4([b for g in gs
                for b in g.scale(.05).translate(2,2).bs])
 
+def rose(argv):
+    n = int(argv[0])
+    gs = [glyphs(s,5*i,0) for i,s in enumerate(argv[1:])]
+    svgout4([b for g in gs for i in range(n) for g1 in [g.rot(i*360/n)]
+               for b in g1.scale(.05).translate(6,6).bs])
+
 def spiral(argv):
     gs = [(glyphs(s,5*i,0),width(s)) for i,s in enumerate(argv)]
     svgout4([b for g,w in gs for g1 in [g.scale(.05)]
@@ -76,6 +77,7 @@ cmds = {
 "-f": full, "--full": full,
 "-y": style, "--style": style,
 "-w": flow, "--flow": flow,
+"-r": rose, "--rose": rose,
 "-s": spiral, "--spiral": spiral,
 }
 
