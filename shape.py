@@ -5,6 +5,9 @@ from math   import pi, sin, cos
 from point  import Point
 from topo   import connect, trim
 
+def xform(bs,f):
+    return Shape([Bezier(f(b.b0),f(b.b1),f(b.b2),f(b.b3)) for b in bs])
+
 @dataclass
 class Shape:
     bs: list[Bezier]
@@ -71,38 +74,28 @@ class Shape:
         return nontriv(keeps,1)
 
     def translate(self, x, y):
-        return Shape([Bezier(Point(b.b0.x+x,b.b0.y+y),
-                             Point(b.b1.x+x,b.b1.y+y),
-                             Point(b.b2.x+x,b.b2.y+y),
-                             Point(b.b3.x+x,b.b3.y+y)) for b in self.bs])
+        return xform(self.bs, lambda p: Point(p.x+x, p.y+y))
 
     def scale(self, v):
-        return Shape([Bezier(Point(b.b0.x*v,b.b0.y*v),
-                             Point(b.b1.x*v,b.b1.y*v),
-                             Point(b.b2.x*v,b.b2.y*v),
-                             Point(b.b3.x*v,b.b3.y*v)) for b in self.bs])
+        return xform(self.bs, lambda p: Point(p.x*v, p.y*v))
 
     def rot(self, a):
         rad = a * (pi/180)
         c, s = cos(rad), sin(rad)
-        xform = lambda p: Point(p.x*c - p.y*s, p.x*s + p.y*c)
-        return Shape([Bezier(*[xform(p) for p in [b.b0,b.b1,b.b2,b.b3]])
-                             for b in self.bs])
+        return xform(self.bs, lambda p: Point(p.x*c - p.y*s, p.x*s + p.y*c))
 
     def curl(self, wid):
         rad = -9.5 * wid * (pi/180)
-        xform = lambda p: Point(-p.y * cos(p.x/rad),
-                                -p.y * sin(p.x/rad))
-        return Shape([Bezier(*[xform(p) for p in [b.b0,b.b1,b.b2,b.b3]])
-                             for b in self.bs])
+        return xform(self.bs,
+            lambda p: Point(-p.y * cos(p.x/rad),
+                            -p.y * sin(p.x/rad)))
 
     def spiral(self):
         rad = -200 * (pi/180)
-        xform = lambda p: Point(-p.y * (1+(p.x/10*rad)) * cos(p.x/rad),
-                                -p.y * (1+(p.x/10*rad)) * sin(p.x/rad))
-        return Shape([Bezier(*[xform(p) for p in [b.b0,b.b1,b.b2,b.b3]])
-                             for b in self.bs])
-        
+        return xform(self.bs,
+            lambda p: Point(-p.y * (1+(p.x/10*rad)) * cos(p.x/rad),
+                            -p.y * (1+(p.x/10*rad)) * sin(p.x/rad)))
+
 
 def nontriv(bs,s=1e3):
     return [b for b in bs if not b.b0.near(b.b3,s)]
