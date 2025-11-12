@@ -1,6 +1,6 @@
 ## Fantastic Parakeet
 
-Fantastic Parakeet is a lo-dep (`dataclasses`,`sys`) package performing boolean operations on Bézier paths.
+Fantastic Parakeet is a lo-dep (`dataclasses`,`math`,`pickle`,`sys`) package performing boolean operations on Bézier paths.
 
 It builds from 2D-points up through Bézier paths, `xor` and `and` operations on them, to general boolean operations on those paths, and layers Euclidean as well as non-Euclidean transformations on top.
 
