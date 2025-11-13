@@ -9,8 +9,40 @@ These [presentations](https://davelongpresentations.rcdis.co/) covering the impl
 - Totally Béziers: Deepdive (12 min + 6 min questions)
 
 were given at the [Recurse Center](https://www.recurse.com/) during the Fall 1 2025 batch.
-----
-...which are in turn built upon detecting intersection:
+
+
+## font.py
+
+`font.py` presents a command-line interface to a font-rendering engine built on top of the basic boolean operations.
+
+It allows for both non-Euclidean transformations:
+
+![spiral](docs/spiral.webp)
+
+![circle](docs/circle.webp)
+
+and Eucliean transformations of text:
+
+![pinwheel](docs/pinwheel.webp)
+
+as well as more traditional text layout:
+
+![softwrap](docs/softwrap.webp)
+
+and limited styling: bold, italic, strikeout, and their combinations.
+
+## cpg.py
+
+`cpg` implements over a 1'000 (property-based tests)[docs/pbt.md], or over 3 tests per engine line of source code.
+
+The bézier boolean operation engine is built as follows:
+
+![callgraph](docs/callgraph.webp)
+
+where everything ultimately rests on only two primitives:
+
+- calculating a new point between two given points, and
+- detecting intersection:
 
 ![intersection](docs/intersect.webp)
 
