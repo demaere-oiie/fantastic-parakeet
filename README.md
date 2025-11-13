@@ -33,7 +33,7 @@ and limited styling: bold, italic, strikeout, and their combinations.
 
 ## cpg.py
 
-`cpg` implements over a 1'000 (property-based tests)[docs/pbt.md], or over 3 tests per engine line of source code.
+`cpg` implements over 1'000 [property-based tests](docs/pbt.md), or over 3 tests per engine line of source code.
 
 The bézier boolean operation engine is built as follows:
 
