@@ -11,9 +11,11 @@ These [presentations](https://davelongpresentations.rcdis.co/) covering the impl
 were given at the [Recurse Center](https://www.recurse.com/) during the Fall 1 2025 batch.
 ----
 ...which are in turn built upon detecting intersection:
+
 ![intersection](docs/intersect.webp)
 
 and overlap:
+
 ![overlap](docs/overlap.webp)
 
 betwween pairs of cubic Bézier curves.
