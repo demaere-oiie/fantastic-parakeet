@@ -9,3 +9,9 @@ These [presentations](https://davelongpresentations.rcdis.co/) covering the impl
 - Totally Béziers: Deepdive (12 min + 6 min questions)
 
 were given at the [Recurse Center](https://www.recurse.com/) during the Fall 1 2025 batch.
+----
+...which are in turn built upon detecting intersection:
+![intersection](docs/intersection.webp)
+and overlap:
+![overlap](docs/overlap.webp)
+betwween pairs of cubic Bézier curves.
