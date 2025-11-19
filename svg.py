@@ -1,5 +1,3 @@
-from topo import connect
-
 serno = 0
 
 def writefile(s,pre="test"):
@@ -45,24 +43,20 @@ def svgout(bs,cs,xs):
 
 def strokes(xs,n=1e3):
     s = ""
-    while xs:
-        p = xs[0].b0
-        for j,x in enumerate(xs):
-            if x.b3.near(p,n):
-                s += f"M {p.x},{p.y} "+" ".join(
-                     f"C {b.b1.x},{b.b1.y} {b.b2.x},{b.b2.y} {b.b3.x},{b.b3.y}"
-                     for b in xs[:j+1])+"Z"
-                xs = xs[j+1:]
-                break
-        else:
-            print("++++")
-            n = 2*n
+    z = 0
+    for i,x in enumerate(xs):
+        if i==z: s+= f"M {x.b0.x},{x.b0.y} "
+        s += f"C {x.b1.x},{x.b1.y} {x.b2.x},{x.b2.y} {x.b3.x},{x.b3.y}"
+        if x.b3.near(xs[z].b0,1):
+            s += "Z"
+            z = i+1
+    #assert z==len(xs)
     return s
 
 def svgout2(xs, width=0.1):
     writefile(f'''
 <svg viewBox="-1 -1 12 12" xmlns="http://www.w3.org/2000/svg">
-    <path stroke-width="{width}" stroke="blue" fill="#8080ff" d="{strokes(connect(xs))}" />
+    <path stroke-width="{width}" stroke="blue" fill="#8080ff" d="{strokes(xs)}" />
 </svg>
     ''')
 

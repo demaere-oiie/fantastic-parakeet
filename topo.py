@@ -13,6 +13,19 @@ def trim(xs):
 def connect(xs):
     return xs and (connect1(xs) or connect1(trim(xs),dbg=True))
 
+def strokes2(bs):
+    return " ".join(f"M {b.b0.x},{b.b0.y} "+
+        f"C {b.b1.x},{b.b1.y} {b.b2.x},{b.b2.y} {b.b3.x},{b.b3.y}"
+        for b in bs)
+
+def dump(ys,xs):
+    print(f'''
+<svg viewBox="-1 -1 12 12" xmlns="http://www.w3.org/2000/svg">
+    <path stroke="red" stroke-width="0.1" fill="#8080ff" d="{strokes2(ys)}" />
+    <path stroke="blue" stroke-width="0.1" fill="#8080ff" d="{strokes2(xs)}" />
+</svg>
+    ''')
+
 def connect1(xs,tol=1e3,dbg=False):
     oxs = xs[:]
     ys, good = [],0
@@ -45,6 +58,13 @@ def connect1(xs,tol=1e3,dbg=False):
                             z = pt
                     break
             else:
-                if dbg: print("!!!")
-                return []
+                dump(ys[good:],xs)
+                tol = tol*10
+                print("!!!",len(xs),tol)
+                if tol>1e5:
+                    if dbg==False: return []
+                    ys = ys[:good]
+                    tol = 1e3
+                    pt = xs[0].b0
+                    z = pt
     return ys[:good]

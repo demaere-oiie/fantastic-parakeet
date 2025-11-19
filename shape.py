@@ -73,6 +73,23 @@ class Shape:
 
         return nontriv(keeps,1)
 
+    def watertight(self):
+        xs = connect(self.bs)
+        ys = []
+        z = 0
+        for i,x in enumerate(xs):
+            if x.b3.near(xs[z].b0):
+                ys.append(Bezier(x.b0,x.b1,x.b2,xs[z].b0))
+                print("loop",z,i+1)
+                z = i+1
+            elif i+1<len(xs):
+                ys.append(Bezier(x.b0,x.b1,x.b2,xs[i+1].b0))
+            else:
+                print("!!!!!")
+                ys.append(x)
+        if z!=len(xs): print("???")
+        return Shape(ys[:z])
+
     def translate(self, x, y):
         return xform(self.bs, lambda p: Point(p.x+x, p.y+y))
 
