@@ -20,7 +20,7 @@ It allows for both non-Euclidean transformations:
 
 ![spiral](docs/spiral.webp)
 
-![circle](docs/circle.webp)
+![circle](docs/circle.png)
 
 and Eucliean transformations of text:
 
