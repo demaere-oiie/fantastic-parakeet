@@ -4,7 +4,7 @@ from svg     import svgout4
 from sys     import argv
 
 setscale(1/7.)
-setshrink(3)
+setshrink(.05)
 
 lorem = """
 Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do

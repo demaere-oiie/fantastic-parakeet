@@ -34,15 +34,16 @@ def glyph(x):
         ls = []
         for x,y in zip(pts[0::2],pts[1::2]):
             draw = (x != -1 or y != -1)
-            nx =   scale*x if draw else -1
-            ny = 5-scale*y if draw else -1
+            nx =     100*scale*x if draw else -1
+            ny = 500-100*scale*y if draw else -1
             if ox != -1 and oy != -1 and nx != -1 and ny != -1:
                 ls.append(thickline(Point(ox,oy),Point(nx,ny),
                                     1.3 if "b" in style else 1))
             ox,oy = nx,ny
         ss =([] if "s" not in style else
              thickline(Point(0,25*scale),Point(wid*scale,25*scale),1))
-        s = Shape(connect(shapesum([Shape(l) for l in ls]).bs)+ss).watertight()
+        s = (Shape(connect(shapesum([Shape(l) for l in ls]).bs)+ss)
+                 .watertight().scale(.01))
         f = open(str(n)+style+".p","wb")
         dump(s,f)
         f.close()

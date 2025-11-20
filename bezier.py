@@ -68,7 +68,7 @@ class Bezier:
 
     def testRay(self):
         p = self.eval(0.5)
-        dx,dy = (5,0)
+        dx,dy = (500,0)
         return Bezier(Point(p.x-0.001,p.y),Point(p.x+dx,p.y+dy),
                       Point(p.x+dx,p.y+dy),Point(p.x+2*dx,p.y+2*dy))
 
