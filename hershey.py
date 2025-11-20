@@ -42,9 +42,9 @@ def glyph(x):
             ox,oy = nx,ny
         ss =([] if "s" not in style else
              thickline(Point(0,25*scale),Point(wid*scale,25*scale),1))
-        s = Shape(connect(shapesum([Shape(l) for l in ls]).bs)+ss)
+        s = Shape(connect(shapesum([Shape(l) for l in ls]).bs)+ss).watertight()
         f = open(str(n)+style+".p","wb")
-        dump(s.watertight(),f)
+        dump(s,f)
         f.close()
       else:
         s = load(f)
