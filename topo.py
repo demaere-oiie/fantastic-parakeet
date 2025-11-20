@@ -58,9 +58,9 @@ def connect1(xs,tol=1e3,dbg=False):
                             z = pt
                     break
             else:
-                dump(ys[good:],xs)
+                #dump(ys[good:],xs)
                 tol = tol*10
-                print("!!!",len(xs),tol)
+                #print("!!!",len(xs),tol)
                 if tol>1e5:
                     if dbg==False: return []
                     ys = ys[:good]
