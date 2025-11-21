@@ -25,7 +25,7 @@ def glyph(x):
     if (n, style) not in cache:
       try:
         wid,pts = simplex[n]
-        f = open(str(n)+style+".p","rb")
+        f = open(f"{n:02}{style}.p","rb")
       except:
         f = None
       if not f:
@@ -44,11 +44,12 @@ def glyph(x):
              thickline(Point(0,2500*scale),Point(wid*100*scale,2500*scale),1))
         s = (Shape(connect(shapesum([Shape(l) for l in ls]).bs)+ss)
                  .watertight().scale(.01))
-        f = open(str(n)+style+".p","wb")
+        f = open(f"{n:02}{style}.p","wb")
         dump(s,f)
         f.close()
       else:
         s = load(f)
+        f.close()
       cache[(n,style)] = (wid*scale,s if "i" not in style else italic(s))
     return cache[(n,style)]
 
