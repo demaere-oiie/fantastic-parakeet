@@ -1,7 +1,7 @@
 from hershey import glyphs, setscale, width
 from stroke  import setshrink
 from svg     import svgout4
-from sys     import argv
+from sys     import argv, stdin
 
 setscale(1/7.)
 setshrink(.05)
@@ -75,6 +75,10 @@ def curl(argv):
     svgout4([b for g,w in gs for b in
                g.scale(.1).curl(w*.1).translate(3,3).bs])
 
+def inp(argv):
+    gs = [glyphs(s.rstrip(),5*i,75) for i,s in enumerate(stdin.readlines())]
+    svgout4([b for g in gs for b in g.scale(.05).translate(.5,.5).bs])
+
 cmds = {
 "-l": left,   "--left": left,
 "-r": right,  "--right": right,
@@ -85,6 +89,7 @@ cmds = {
 "-r": rose,   "--rose": rose,
 "-s": spiral, "--spiral": spiral,
 "-u": curl,   "--curl": curl,
+"-i": inp,    "--stdin": inp,
 }
 
 if not argv[1].startswith("-"):
