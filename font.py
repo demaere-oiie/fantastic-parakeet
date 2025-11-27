@@ -77,11 +77,8 @@ def curl(argv):
                g.scale(.1).curl(w*.1).translate(3,3).bs])
 
 def inp(argv):
-    gs = [glyphs(s.rstrip(),5*i,75) for i,s in enumerate(stdin.readlines())]
-    svgout4([b for g in gs for b in g.scale(.05).translate(.5,.5).bs])
-
-def nib(argv):
-    gs = [glyphs([(c,"n") for c in s.rstrip()],5*i,0)
+    style = "" if len(argv)<1 else sorted(argv[0])
+    gs = [glyphs([(c,style) for c in s.rstrip()],5*i,0)
           for i,s in enumerate(stdin.readlines())]
     svgout4([b for g in gs for b in g.scale(.05).translate(2,2).bs])
 
@@ -97,7 +94,6 @@ cmds = {
 "-s": spiral, "--spiral": spiral,
 "-u": curl,   "--curl": curl,
 "-i": inp,    "--stdin": inp,
-"-n": nib,    "--nib": nib,
 }
 
 if not argv[1].startswith("-"):
