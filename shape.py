@@ -78,7 +78,7 @@ class Shape:
         ys = []
         z = 0
         for i,x in enumerate(xs):
-            if x.b3.near(xs[z].b0):
+            if x.b3.near(xs[z].b0) or x.b3.near(xs[z].b0,1e5):
                 ys.append(Bezier(x.b0,x.b1,x.b2,xs[z].b0))
                 print("loop",z,i+1)
                 z = i+1
@@ -86,6 +86,9 @@ class Shape:
                 ys.append(Bezier(x.b0,x.b1,x.b2,xs[i+1].b0))
             else:
                 print("!!!!!")
+                #if xs[z:] and ys[z:]:
+                #    svgout5(xs[z:])
+                #    svgout5(ys[z:])
                 ys.append(x)
         if z!=len(xs): print("???")
         return Shape(ys[:z])

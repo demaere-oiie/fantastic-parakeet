@@ -78,3 +78,12 @@ def svgout4(xs):
     <path stroke-width="0" stroke="blue" fill="black" d="{strokes(xs,1e2)}" />
 </svg>
     ''')
+
+def svgout5(xs):
+    writefile(f'''
+<svg viewBox="-1 -1 300 600" xmlns="http://www.w3.org/2000/svg">
+    <path stroke="blue" stroke-width="0.1" fill="#8080ff" d="{strokes2(xs)}" />
+    <path stroke="green" stroke-width="5" fill="#8080ff" d="M {xs[0].b0.x},{xs[0].b0.y} h 5" />
+    <path stroke="red" stroke-width="5" fill="#8080ff" d="M {xs[-1].b3.x},{xs[-1].b3.y} h 5" />
+</svg>
+    ''')

@@ -38,7 +38,8 @@ def glyph(x):
             ny = 500-100*scale*y if draw else -1
             if ox != -1 and oy != -1 and nx != -1 and ny != -1:
                 ls.append(thickline(Point(ox,oy),Point(nx,ny),
-                                    1.5 if "b" in style else 1))
+                                    1.5 if "b" in style else 1,
+                                    nib=("n" in style)))
             ox,oy = nx,ny
         ss =([] if "s" not in style else
              thickline(Point(0,2500*scale),Point(wid*100*scale,2500*scale),1))
