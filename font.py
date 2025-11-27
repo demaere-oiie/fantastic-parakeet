@@ -44,6 +44,7 @@ def style(argv):
 
 def flow(argv):
     WID = 75 if len(argv)<1 else int(argv[0])
+    style = "" if len(argv)<2 else sorted(argv[1])
     ws = lorem[:]
     gs = []
     while ws:
@@ -53,7 +54,7 @@ def flow(argv):
         if width(" ".join(ws[:i])) > WID:
             i = i-1
         print(ws[:i])
-        gs.append(glyphs(" ".join(w for w in ws[:i]),
+        gs.append(glyphs([(c,style) for c in  " ".join(w for w in ws[:i])],
                          5*len(gs), WID, align="full" if ws[i:] else "left"))
         ws = ws[i:]
     svgout4([b for g in gs
