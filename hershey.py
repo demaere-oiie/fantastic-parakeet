@@ -42,7 +42,8 @@ def glyph(x):
             ox,oy = nx,ny
         ss =([] if "s" not in style else
              thickline(Point(0,2500*scale),Point(wid*100*scale,2500*scale),1))
-        s = (Shape(connect(shapesum([Shape(l) for l in ls]).bs)+ss)
+        s = (Shape(connect(shapesum([Shape(l) for l in ls]).bs+ss) or
+                   connect(shapesum([Shape(l) for l in ls[::-1]]).bs+ss))
                  .watertight().scale(.01))
         f = open(f"{n:02}{style}.p","wb")
         dump(s,f)
