@@ -18,10 +18,14 @@ def italic(s):
         return Point(p.x + 1 - 0.2*p.y, p.y)
     return Shape([Bezier(*map(xform,[b.b0,b.b1,b.b2,b.b3])) for b in s.bs])
 
+def xhr(n):
+    return chr(n+32) if n<127-32 else chr(n-95+1040)
+
 def glyph(x):
     c = x[0] if isinstance(x,tuple) else x
     style = ''.join(sorted(x[1])) if isinstance(x,tuple) else ""
-    n = ord(c)-32 if 32 <= ord(c) <= 126 else 127-32
+    n = (ord(c)-32 if 32 <= ord(c) <= 126 else 
+         ord(c)-1040+95 if 1040 <= ord(c) <= 1103 else 127-32)
     if (n, style) not in cache:
       try:
         wid,pts = simplex[n]
@@ -29,7 +33,7 @@ def glyph(x):
       except:
         f = None
       if not f:
-        print(f"render '{chr(n+32)}' {style}")
+        print(f"render '{xhr(n)}' {style}")
         ox, oy = -1,-1
         ls = []
         for x,y in zip(pts[0::2],pts[1::2]):
@@ -74,7 +78,7 @@ def glyphs(s,y=0,wid=0,align="left"):
     return Shape([b for i,(w,s) in enumerate(gs2)
                     for b in s.translate(sum(w for w,s in gs2[:i]),y).bs])
 
-simplex = [
+zimplex = [
 [16, [] ],
 [10, [5,21,5,7,-1,-1,5,2,4,1,5,0,6,1,5,2] ],
 [16, [4,21,4,14,-1,-1,12,21,12,14] ],
@@ -213,3 +217,41 @@ simplex = [
   6,11,8,11,10,10,14,7,16,6,18,6,20,7,21,10,21,12] ],
 [20, [2,0,2,28,18,28,18,0,2,0] ], # tofu
 ]
+
+xange = lambda l,h: list(range(l,h))
+puncs = (      [0x109,0x10C,0x11C,0x10E,921,0x11D,282] +
+         [0x110,0x111,869,0x114,0x106,0x113,0x105,0x10F] +
+         xange(0x0FB,0x103)+
+         [0x103,0x104,0x107,0x108,891,0x115,892,0x10A] +
+         [923])
+puncs2 = [0x29D,0x144,0x29E,912,0x18F,281]
+puncs3 = [0x29F,274,0x2A0,896,948]
+F =\
+{"serif"  : puncs+xange(0x4D3,0x4ED)+puncs2+xange(0x507,0x522)+puncs3
+,"fraktur": puncs+xange(0x57D,0x597)+puncs2+xange(0x597,0x5B1)+puncs3
+,"italic" : puncs+xange(0x2D7,0x2F1)+puncs2+xange(0x324,0x33E)+puncs3
+,"simplex": puncs+xange(0x059,0x073)+puncs2+xange(0x0A6,0x0C0)+puncs3+xange(1172,1172+1103-1040)
+,"omega"  : (256-32)*[0x08A]
+,"sample" : xange(4*95,5*95)
+}
+
+def cvt(s,o):
+     return [r
+        for l,h in zip(s[0::2],s[1::2])
+        for off in [lambda c: ord(c)-ord('R')]
+        for r in ([-1,-1] if (l,h)==(' ','R') else
+                  [off(l)-off(o),9-off(h)])]
+
+def loadfont(f="simplex"):
+     global simplex, ximplex
+     ls = open("hershey2").readlines()
+     xlat = lambda s:[ord(s[9])-ord(s[8]),cvt(s[10:],s[8])]
+     simplex = [[16,[]]]+[xlat(ls[i]) for i in F[f]]
+     ximplex = [xlat(l) for l in ls]
+
+loadfont()
+for i in range(len(zimplex)):
+    if simplex[i]!=zimplex[i]:
+        for j,x in enumerate(ximplex):
+            if x == zimplex[i]:
+                print(chr(i+32),j)
