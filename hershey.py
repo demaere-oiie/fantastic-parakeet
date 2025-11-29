@@ -19,13 +19,13 @@ def italic(s):
     return Shape([Bezier(*map(xform,[b.b0,b.b1,b.b2,b.b3])) for b in s.bs])
 
 def xhr(n):
-    return chr(n+32) if n<127-32 else chr(n-95+1040)
+    return chr(n+32) if n<127-32 else chr(n-96+1040)
 
 def glyph(x):
     c = x[0] if isinstance(x,tuple) else x
     style = ''.join(sorted(x[1])) if isinstance(x,tuple) else ""
     n = (ord(c)-32 if 32 <= ord(c) <= 126 else 
-         ord(c)-1040+95 if 1040 <= ord(c) <= 1103 else 127-32)
+         ord(c)-1040+96 if 1040 <= ord(c) <= 1103 else 127-32)
     if (n, style) not in cache:
       try:
         wid,pts = simplex[n]
@@ -86,7 +86,7 @@ puncs = (      [0x109,0x10C,0x11C,0x10E,921,0x11D,282] +
          [923])
 puncs2 = [0x29D,0x144,0x29E,912,0x18F,281]
 puncs3 = [0x29F,274,0x2A0,896,964]
-cyr    = xange(1172,1172+1103-1040)
+cyr    = xange(1171,1171+1103-1040)
 F =\
 {"serif"  : puncs+xange(0x4D3,0x4ED)+puncs2+xange(0x507,0x522)+puncs3+cyr
 ,"fraktur": puncs+xange(0x57D,0x597)+puncs2+xange(0x597,0x5B1)+puncs3+cyr
