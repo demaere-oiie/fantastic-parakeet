@@ -23,8 +23,8 @@ def thickline(p,q,w,nib=False):
     scale  = shrink*norm(dx,dy)
     unx, uny = -dy/scale*w, dx/scale*w
     if nib:
-        unx += 1.2*unx*abs(0.707*unx - 0.707*uny)/norm(unx,uny)
-        uny += 1.2*uny*abs(0.707*unx - 0.707*uny)/norm(unx,uny)
+        unx += 0.8*unx*abs(0.707*unx - 0.707*uny)/norm(unx,uny)
+        uny += 0.8*uny*abs(0.707*unx - 0.707*uny)/norm(unx,uny)
     c = 1.3
     return (line(Point(p.x+unx,p.y+uny), Point(q.x+unx,q.y+uny)) +
         [Bezier(Point(q.x+unx,q.y+uny),Point(q.x+unx+c*uny,q.y+uny+c*(-unx)),
