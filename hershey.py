@@ -5,6 +5,7 @@ from stroke import shapesum, thickline
 from topo   import connect
 
 from pickle import dump, load
+from svg    import svgout3
 
 scale = 1/5.
 cache = dict()
@@ -21,6 +22,9 @@ def italic(s):
 def xhr(n):
     return chr(n+32) if n<127-32 else chr(n-96+1040)
 
+def debug(bs):
+    svgout3(bs,dx=300,dy=800)
+
 def glyph(x):
     c = x[0] if isinstance(x,tuple) else x
     style = ''.join(sorted(x[1])) if isinstance(x,tuple) else ""
@@ -33,7 +37,7 @@ def glyph(x):
       except:
         f = None
       if not f:
-        print(f"render '{xhr(n)}' {style}")
+        print(f"render '{xhr(n)}' {style} {wid} {len(pts)}")
         ox, oy = -1,-1
         ls = []
         for x,y in zip(pts[0::2],pts[1::2]):
@@ -47,9 +51,10 @@ def glyph(x):
             ox,oy = nx,ny
         ss =([] if "s" not in style else
              thickline(Point(0,2500*scale),Point(wid*100*scale,2500*scale),1))
-        s = (Shape(connect(shapesum([Shape(l) for l in ls]).bs+ss) or
-                   connect(shapesum([Shape(l) for l in ls[::-1]]).bs+ss))
-                 .watertight().scale(.01))
+        s = (Shape( # debug(shapesum([Shape(l) for l in ls]).bs) or
+                   connect(shapesum([Shape(l) for l in ls]).bs+ss) or
+                   connect(shapesum([Shape(l) for l in ls[::-1]]).bs+ss or
+                   [])).watertight().scale(.01))
         f = open(f"{n:03}{style}.p","wb")
         dump(s,f)
         f.close()
@@ -86,7 +91,7 @@ puncs = (      [0x109,0x10C,0x11C,0x10E,921,0x11D,282] +
          [923])
 puncs2 = [0x29D,0x144,0x29E,912,0x18F,281]
 puncs3 = [0x29F,274,0x2A0,896,964]
-cyr    = xange(1171,1171+1103-1040)
+cyr    = xange(1171,1171+1103-1040+1)
 F =\
 {"serif"  : puncs+xange(0x4D3,0x4ED)+puncs2+xange(0x507,0x522)+puncs3+cyr
 ,"fraktur": puncs+xange(0x57D,0x597)+puncs2+xange(0x597,0x5B1)+puncs3+cyr
@@ -109,4 +114,4 @@ def loadfont(f="simplex"):
      xlat = lambda s:[ord(s[9])-ord(s[8]),cvt(s[10:],s[8])]
      simplex = [[16,[]]]+[xlat(ls[i]) for i in F[f]]
 
-loadfont()
+loadfont("fraktur")

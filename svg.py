@@ -65,9 +65,9 @@ def strokes2(bs):
         f"C {b.b1.x},{b.b1.y} {b.b2.x},{b.b2.y} {b.b3.x},{b.b3.y}"
         for b in bs)
 
-def svgout3(xs,pre="test"):
+def svgout3(xs,pre="test",dx=12,dy=12):
     writefile(f'''
-<svg viewBox="-1 -1 12 12" xmlns="http://www.w3.org/2000/svg">
+<svg viewBox="-1 -1 {dx} {dy}" xmlns="http://www.w3.org/2000/svg">
     <path stroke="blue" stroke-width="0.1" fill="#8080ff" d="{strokes2(xs)}" />
 </svg>
     ''',pre)
