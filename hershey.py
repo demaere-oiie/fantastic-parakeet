@@ -20,7 +20,12 @@ def italic(s):
     return Shape([Bezier(*map(xform,[b.b0,b.b1,b.b2,b.b3])) for b in s.bs])
 
 def xhr(n):
-    return chr(n+32) if n<127-32 else chr(n-96+1040)
+    return (chr(n+32) if n<127-32 else
+            chr(n-96+1040) if n<160 else
+            chr(n-160+913) if n<177 else
+            chr(n-160+914) if n<184 else
+            chr(n-184+945) if n<201 else
+            chr(n-184+946))
 
 def debug(bs):
     svgout3(bs,dx=300,dy=800)
@@ -29,7 +34,12 @@ def glyph(x):
     c = x[0] if isinstance(x,tuple) else x
     style = ''.join(sorted(x[1])) if isinstance(x,tuple) else ""
     n = (ord(c)-32 if 32 <= ord(c) <= 126 else 
-         ord(c)-1040+96 if 1040 <= ord(c) <= 1103 else 127-32)
+         ord(c)-913+160 if 913 <= ord(c) <= 930 else
+         ord(c)-913+159 if 931 <= ord(c) <= 937 else
+         ord(c)-945+184 if 945 <= ord(c) <= 961 else
+         ord(c)-945+183 if 963 <= ord(c) <= 969 else
+         ord(c)-1040+96 if 1040 <= ord(c) <= 1103 else
+         127-32)
     if (n, style) not in cache:
       try:
         wid,pts = simplex[n]
@@ -92,13 +102,14 @@ puncs = (      [0x109,0x10C,0x11C,0x10E,921,0x11D,282] +
 puncs2 = [0x29D,0x144,0x29E,912,0x18F,281]
 puncs3 = [0x29F,274,0x2A0,896,964]
 cyr    = xange(1171,1171+1103-1040+1)
+ell    = xange(115,139)+xange(192,217)
 F =\
-{"serif"  : puncs+xange(0x4D3,0x4ED)+puncs2+xange(0x507,0x522)+puncs3+cyr
-,"fraktur": puncs+xange(0x57D,0x597)+puncs2+xange(0x597,0x5B1)+puncs3+cyr
-,"italic" : puncs+xange(0x2D7,0x2F1)+puncs2+xange(0x324,0x33E)+puncs3+cyr
-,"simplex": puncs+xange(0x059,0x073)+puncs2+xange(0x0A6,0x0C0)+puncs3+cyr
-,"omega"  : (256-32)*[0x08A]
-,"sample" : xange(4*95,5*95)
+{"serif"   : puncs+xange(0x4D3,0x4ED)+puncs2+xange(0x507,0x522)+puncs3+cyr
+,"fraktur" : puncs+xange(0x57D,0x597)+puncs2+xange(0x597,0x5B1)+puncs3+cyr
+,"italic"  : puncs+xange(0x2D7,0x2F1)+puncs2+xange(0x324,0x33E)+puncs3+cyr
+,"simplex" : puncs+xange(0x059,0x073)+puncs2+xange(0x0A6,0x0C0)+puncs3+cyr+ell
+,"sample"  : xange(4*95,5*95)
+,"medieval": puncs+xange(1545,1571)+puncs2+xange(1571,1597)+puncs3
 }
 
 def cvt(s,o):
@@ -114,4 +125,4 @@ def loadfont(f="simplex"):
      xlat = lambda s:[ord(s[9])-ord(s[8]),cvt(s[10:],s[8])]
      simplex = [[16,[]]]+[xlat(ls[i]) for i in F[f]]
 
-loadfont("fraktur")
+loadfont()
