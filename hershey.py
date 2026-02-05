@@ -104,7 +104,7 @@ puncs3 = [0x29F,274,0x2A0,896,964]
 cyr    = xange(1171,1171+1103-1040+1)
 ell    = xange(115,139)+xange(192,217)
 F =\
-{"serif"   : puncs+xange(0x4D3,0x4ED)+puncs2+xange(0x507,0x522)+puncs3+cyr
+{"serif"   : puncs+xange(0x4D3,0x4ED)+puncs2+xange(0x507,0x521)+puncs3+cyr
 ,"fraktur" : puncs+xange(0x57D,0x597)+puncs2+xange(0x597,0x5B1)+puncs3+cyr
 ,"italic"  : puncs+xange(0x2D7,0x2F1)+puncs2+xange(0x324,0x33E)+puncs3+cyr
 ,"simplex" : puncs+xange(0x059,0x073)+puncs2+xange(0x0A6,0x0C0)+puncs3+cyr+ell
