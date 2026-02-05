@@ -125,4 +125,4 @@ def loadfont(f="simplex"):
      xlat = lambda s:[ord(s[9])-ord(s[8]),cvt(s[10:],s[8])]
      simplex = [[16,[]]]+[xlat(ls[i]) for i in F[f]]
 
-loadfont()
+loadfont("medieval")
