@@ -116,7 +116,7 @@ F =\
 ,"medieval": puncs+xange(1545,1571)+puncs2+xange(1571,1597)+puncs3
 }
 
-K = {"fraktur": "W", "medieval": ""}
+K = {"serif": "W", "fraktur": "DRTV", "medieval": "AFHXhklqt"}
 
 def cvt(s,o):
      return [r
