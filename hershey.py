@@ -61,7 +61,11 @@ def glyph(x):
             ox,oy = nx,ny
         ss =([] if "s" not in style else
              thickline(Point(0,2500*scale),Point(wid*100*scale,2500*scale),1))
-        s = (Shape( # debug(shapesum([Shape(l) for l in ls]).bs) or
+        if c in kludges:
+          print("  KLUDGE")
+          s = Shape(b for bs in ls for b in bs).scale(.01)
+        else:
+          s = (Shape( # debug(shapesum([Shape(l) for l in ls]).bs) or
                    connect(shapesum([Shape(l) for l in ls]).bs+ss) or
                    connect(shapesum([Shape(l) for l in ls[::-1]]).bs+ss or
                    [])).watertight().scale(.01))
@@ -112,6 +116,8 @@ F =\
 ,"medieval": puncs+xange(1545,1571)+puncs2+xange(1571,1597)+puncs3
 }
 
+K = {"fraktur": "W", "medieval": ""}
+
 def cvt(s,o):
      return [r
         for l,h in zip(s[0::2],s[1::2])
@@ -119,10 +125,13 @@ def cvt(s,o):
         for r in ([-1,-1] if (l,h)==(' ','R') else
                   [off(l)-off(o),9-off(h)])]
 
-def loadfont(f="simplex"):
+def loadfont(f):
+     global kludges
      global simplex
      ls = open("hershey2").readlines()
      xlat = lambda s:[ord(s[9])-ord(s[8]),cvt(s[10:],s[8])]
      simplex = [[16,[]]]+[xlat(ls[i]) for i in F[f]]
+     kludges = K.get(f,"")
 
-loadfont()
+import os
+loadfont(os.environ.get("FONT","simplex"))
